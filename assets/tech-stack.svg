@@ -1,0 +1,216 @@
+<svg viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stackBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#07090f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="layer1Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="layer2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="layer3Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="layer4Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#ff6b9d;stop-opacity:0" />
+    </linearGradient>
+    <filter id="stackShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="800" fill="url(#stackBg)"/>
+
+  <!-- Title -->
+  <text x="700" y="50" font-size="44" font-weight="900" fill="#00d9ff" text-anchor="middle" font-family="Arial, sans-serif">
+    Technology Stack
+  </text>
+  <text x="700" y="90" font-size="16" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Professional autonomous driving architecture built on industry standards</text>
+
+  <!-- Layer 4: Hardware (Bottom) -->
+  <g filter="url(#stackShadow)">
+    <rect x="100" y="650" width="1200" height="110" rx="15" fill="#1e3a5f" stroke="#ff6b9d" stroke-width="2.5"/>
+    <rect x="100" y="650" width="1200" height="40" rx="15" fill="url(#layer4Grad)"/>
+
+    <text x="700" y="680" font-size="18" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">HARDWARE LAYER</text>
+
+    <!-- Hardware items -->
+    <g>
+      <!-- GPU -->
+      <rect x="120" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="175" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">NVIDIA RTX GPU</text>
+
+      <!-- Cameras -->
+      <rect x="260" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="315" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">3x USB Cameras</text>
+
+      <!-- Lidar -->
+      <rect x="400" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="455" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">64-Ray Lidar</text>
+
+      <!-- CPU -->
+      <rect x="540" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="595" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">Multi-core CPU</text>
+
+      <!-- Memory -->
+      <rect x="680" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="735" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">32GB+ RAM</text>
+
+      <!-- Storage -->
+      <rect x="820" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="875" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">SSD Storage</text>
+
+      <!-- Network -->
+      <rect x="960" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="1015" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">Ethernet/CAN</text>
+
+      <!-- OS -->
+      <rect x="1100" y="710" width="110" height="35" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="1155" y="733" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">Ubuntu 22.04</text>
+    </g>
+  </g>
+
+  <!-- Layer 3: ROS2 & Middleware -->
+  <g filter="url(#stackShadow)">
+    <rect x="100" y="480" width="1200" height="140" rx="15" fill="#1e3a5f" stroke="#00ff88" stroke-width="2.5"/>
+    <rect x="100" y="480" width="1200" height="40" rx="15" fill="url(#layer3Grad)"/>
+
+    <text x="700" y="510" font-size="18" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">ROS2 MIDDLEWARE LAYER</text>
+
+    <g>
+      <!-- ROS2 Humble -->
+      <g>
+        <rect x="120" y="540" width="240" height="60" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+        <text x="240" y="565" font-size="14" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">ROS2 Humble</text>
+        <text x="240" y="585" font-size="11" fill="#7fa0c0" text-anchor="middle" font-family="Arial">DDS Middleware (Domain 0)</text>
+      </g>
+
+      <!-- tf2 -->
+      <g>
+        <rect x="400" y="540" width="240" height="60" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+        <text x="520" y="565" font-size="14" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">TF2 Library</text>
+        <text x="520" y="585" font-size="11" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Transform Tree Management</text>
+      </g>
+
+      <!-- Message Types -->
+      <g>
+        <rect x="680" y="540" width="240" height="60" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+        <text x="800" y="565" font-size="14" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">Standard Messages</text>
+        <text x="800" y="585" font-size="11" fill="#7fa0c0" text-anchor="middle" font-family="Arial">sensor_msgs, nav_msgs, geometry_msgs</text>
+      </g>
+
+      <!-- Python/C++ -->
+      <g>
+        <rect x="960" y="540" width="240" height="60" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+        <text x="1080" y="565" font-size="14" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">Python / C++</text>
+        <text x="1080" y="585" font-size="11" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Client Libraries & APIs</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Layer 2: Navigation Stack -->
+  <g filter="url(#stackShadow)">
+    <rect x="100" y="310" width="1200" height="140" rx="15" fill="#1e3a5f" stroke="#00d9ff" stroke-width="2.5"/>
+    <rect x="100" y="310" width="1200" height="40" rx="15" fill="url(#layer2Grad)"/>
+
+    <text x="700" y="340" font-size="18" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">NAVIGATION2 STACK LAYER</text>
+
+    <g>
+      <!-- Nav2 Costmap -->
+      <g>
+        <rect x="120" y="370" width="200" height="60" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+        <text x="220" y="393" font-size="13" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Costmap 2D</text>
+        <text x="220" y="410" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">100×100 grid, 20Hz</text>
+      </g>
+
+      <!-- Nav2 Planner -->
+      <g>
+        <rect x="360" y="370" width="200" height="60" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+        <text x="460" y="393" font-size="13" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Path Planner</text>
+        <text x="460" y="410" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Navfn, Theta*</text>
+      </g>
+
+      <!-- Nav2 Controller -->
+      <g>
+        <rect x="600" y="370" width="200" height="60" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+        <text x="700" y="393" font-size="13" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Pure Pursuit</text>
+        <text x="700" y="410" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Regulated Lookahead</text>
+      </g>
+
+      <!-- Nav2 Behavior -->
+      <g>
+        <rect x="840" y="370" width="200" height="60" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+        <text x="940" y="393" font-size="13" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Behavior Tree</text>
+        <text x="940" y="410" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Navigation Logic</text>
+      </g>
+
+      <!-- Nav2 Recoveries -->
+      <g>
+        <rect x="1080" y="370" width="200" height="60" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+        <text x="1180" y="393" font-size="13" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Safety Layer</text>
+        <text x="1180" y="410" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Emergency Brake</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Layer 1: Simulation & Control (Top) -->
+  <g filter="url(#stackShadow)">
+    <rect x="100" y="140" width="1200" height="140" rx="15" fill="#1e3a5f" stroke="#ffd700" stroke-width="2.5"/>
+    <rect x="100" y="140" width="1200" height="40" rx="15" fill="url(#layer1Grad)"/>
+
+    <text x="700" y="170" font-size="18" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">SIMULATION & APPLICATION LAYER</text>
+
+    <g>
+      <!-- CARLA -->
+      <g>
+        <rect x="120" y="200" width="230" height="60" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+        <text x="235" y="223" font-size="13" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">CARLA 0.10.0 UE5</text>
+        <text x="235" y="240" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Physics, Sensors, Simulation</text>
+      </g>
+
+      <!-- Bridge -->
+      <g>
+        <rect x="390" y="200" width="230" height="60" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+        <text x="505" y="223" font-size="13" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Python Bridge</text>
+        <text x="505" y="240" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">CARLA API ↔ ROS2 Interface</text>
+      </g>
+
+      <!-- Nodes -->
+      <g>
+        <rect x="660" y="200" width="230" height="60" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+        <text x="775" y="223" font-size="13" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Custom Nodes</text>
+        <text x="775" y="240" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Localization, Lane Planning</text>
+      </g>
+
+      <!-- Visualization -->
+      <g>
+        <rect x="930" y="200" width="230" height="60" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+        <text x="1045" y="223" font-size="13" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Visualization</text>
+        <text x="1045" y="240" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">RViz, Rerun Live Debug</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Connection arrows indicating data flow -->
+  <defs>
+    <marker id="flowArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#00d9ff" opacity="0.6"/>
+    </marker>
+  </defs>
+
+  <line x1="700" y1="280" x2="700" y2="310" stroke="#00d9ff" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" marker-end="url(#flowArrow)"/>
+  <line x1="700" y1="450" x2="700" y2="480" stroke="#00d9ff" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" marker-end="url(#flowArrow)"/>
+  <line x1="700" y1="620" x2="700" y2="650" stroke="#00d9ff" stroke-width="2" stroke-dasharray="5,5" opacity="0.6" marker-end="url(#flowArrow)"/>
+
+  <!-- Footer info -->
+  <text x="700" y="790" font-size="12" fill="#7fa0c0" text-anchor="middle" font-family="Arial">
+    Professional-grade architecture | Modular design | Hardware-agnostic | Sim-to-real ready
+  </text>
+</svg>

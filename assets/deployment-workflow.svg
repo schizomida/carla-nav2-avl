@@ -1,0 +1,245 @@
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="workflowBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#07090f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="devGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="testGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="deployGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0" />
+    </linearGradient>
+    <filter id="workShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity="0.4"/>
+    </filter>
+    <marker id="stepArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#00ffaa"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="900" fill="url(#workflowBg)"/>
+
+  <!-- Title -->
+  <text x="700" y="50" font-size="44" font-weight="900" fill="#00d9ff" text-anchor="middle" font-family="Arial, sans-serif">
+    Development & Deployment Workflow
+  </text>
+  <text x="700" y="90" font-size="16" fill="#7fa0c0" text-anchor="middle" font-family="Arial">From local development to production vehicle integration</text>
+
+  <!-- PHASE 1: DEVELOPMENT -->
+  <g filter="url(#workShadow)">
+    <rect x="50" y="130" width="1300" height="200" rx="15" fill="#1e3a5f" stroke="#00d9ff" stroke-width="2.5"/>
+    <rect x="50" y="130" width="1300" height="45" rx="15" fill="url(#devGrad)"/>
+
+    <text x="100" y="165" font-size="20" font-weight="bold" fill="#00d9ff" font-family="Arial">PHASE 1: SIMULATION DEVELOPMENT</text>
+
+    <!-- Dev steps -->
+    <g>
+      <!-- Step 1 -->
+      <rect x="80" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="160" cy="215" r="12" fill="#00ffaa"/>
+      <text x="160" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Setup CARLA</text>
+      <text x="160" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Environment Config</text>
+      <text x="160" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">ROS2 Bridge</text>
+
+      <!-- Arrow -->
+      <line x1="240" y1="250" x2="290" y2="250" stroke="#00ffaa" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 2 -->
+      <rect x="290" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="370" cy="215" r="12" fill="#00ffaa"/>
+      <text x="370" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Nav2 Stack</text>
+      <text x="370" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Costmap Config</text>
+      <text x="370" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Controller Tune</text>
+
+      <!-- Arrow -->
+      <line x1="450" y1="250" x2="500" y2="250" stroke="#00ffaa" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 3 -->
+      <rect x="500" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="580" cy="215" r="12" fill="#00ffaa"/>
+      <text x="580" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Custom Nodes</text>
+      <text x="580" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Localization</text>
+      <text x="580" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Lane Planning</text>
+
+      <!-- Arrow -->
+      <line x1="660" y1="250" x2="710" y2="250" stroke="#00ffaa" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 4 -->
+      <rect x="710" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="790" cy="215" r="12" fill="#00ffaa"/>
+      <text x="790" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Safety Modules</text>
+      <text x="790" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Emergency Brake</text>
+      <text x="790" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Traffic Lights</text>
+
+      <!-- Arrow -->
+      <line x1="870" y1="250" x2="920" y2="250" stroke="#00ffaa" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 5 -->
+      <rect x="920" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="1000" cy="215" r="12" fill="#00ffaa"/>
+      <text x="1000" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Integration Test</text>
+      <text x="1000" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">End-to-End Tests</text>
+      <text x="1000" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Sim Validation</text>
+
+      <!-- Arrow -->
+      <line x1="1080" y1="250" x2="1130" y2="250" stroke="#00ffaa" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 6 -->
+      <rect x="1130" y="195" width="160" height="110" rx="10" fill="#2a3f5f" stroke="#00ffaa" stroke-width="2"/>
+      <circle cx="1210" cy="215" r="12" fill="#00ffaa"/>
+      <text x="1210" y="250" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Documentation</text>
+      <text x="1210" y="268" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Parameters</text>
+      <text x="1210" y="283" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Calibration</text>
+    </g>
+  </g>
+
+  <!-- PHASE 2: VALIDATION -->
+  <g filter="url(#workShadow)">
+    <rect x="50" y="370" width="1300" height="180" rx="15" fill="#1e3a5f" stroke="#ffd700" stroke-width="2.5"/>
+    <rect x="50" y="370" width="1300" height="45" rx="15" fill="url(#testGrad)"/>
+
+    <text x="100" y="405" font-size="20" font-weight="bold" fill="#ffd700" font-family="Arial">PHASE 2: SIMULATION VALIDATION & TESTING</text>
+
+    <!-- Validation steps -->
+    <g>
+      <!-- Test 1 -->
+      <rect x="100" y="435" width="180" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="190" cy="450" r="10" fill="#ffd700"/>
+      <text x="190" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Lane Following</text>
+      <text x="190" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Multiple towns, speeds</text>
+
+      <!-- Test 2 -->
+      <rect x="320" y="435" width="180" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="410" cy="450" r="10" fill="#ffd700"/>
+      <text x="410" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Obstacle Detection</text>
+      <text x="410" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Emergency braking</text>
+
+      <!-- Test 3 -->
+      <rect x="540" y="435" width="180" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="630" cy="450" r="10" fill="#ffd700"/>
+      <text x="630" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Traffic Lights</text>
+      <text x="630" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Stop & go sequences</text>
+
+      <!-- Test 4 -->
+      <rect x="760" y="435" width="180" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="850" cy="450" r="10" fill="#ffd700"/>
+      <text x="850" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Dynamic Scenarios</text>
+      <text x="850" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Weather, traffic, pedestrians</text>
+
+      <!-- Test 5 -->
+      <rect x="980" y="435" width="180" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="1070" cy="450" r="10" fill="#ffd700"/>
+      <text x="1070" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Parameter Tuning</text>
+      <text x="1070" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Optimize gains, speed</text>
+
+      <!-- Test 6 -->
+      <rect x="1200" y="435" width="130" height="90" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="1265" cy="450" r="10" fill="#ffd700"/>
+      <text x="1265" y="480" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Sign Off</text>
+      <text x="1265" y="497" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Ready for real car</text>
+    </g>
+  </g>
+
+  <!-- PHASE 3: DEPLOYMENT -->
+  <g filter="url(#workShadow)">
+    <rect x="50" y="610" width="1300" height="250" rx="15" fill="#1e3a5f" stroke="#ff6b6b" stroke-width="2.5"/>
+    <rect x="50" y="610" width="1300" height="45" rx="15" fill="url(#deployGrad)"/>
+
+    <text x="100" y="645" font-size="20" font-weight="bold" fill="#ff6b6b" font-family="Arial">PHASE 3: REAL-WORLD DEPLOYMENT</text>
+
+    <!-- Deployment steps -->
+    <g>
+      <!-- Step 1 -->
+      <rect x="80" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="155" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="155" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Hardware</text>
+      <text x="155" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Mount cameras</text>
+      <text x="155" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Lidar</text>
+      <text x="155" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Vehicle CAN bus</text>
+      <text x="155" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Ethernet integration</text>
+
+      <!-- Arrow -->
+      <line x1="230" y1="755" x2="270" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 2 -->
+      <rect x="270" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="345" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="345" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Camera</text>
+      <text x="345" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Calibration</text>
+      <text x="345" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Intrinsics</text>
+      <text x="345" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Extrinsics</text>
+      <text x="345" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Sync test</text>
+
+      <!-- Arrow -->
+      <line x1="420" y1="755" x2="460" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 3 -->
+      <rect x="460" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="535" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="535" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Software</text>
+      <text x="535" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Deploy stack</text>
+      <text x="535" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Update params</text>
+      <text x="535" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Calibration</text>
+      <text x="535" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Vehicle control</text>
+
+      <!-- Arrow -->
+      <line x1="610" y1="755" x2="650" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 4 -->
+      <rect x="650" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="725" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="725" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Closed Loop</text>
+      <text x="725" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Steering control</text>
+      <text x="725" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Speed control</text>
+      <text x="725" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">20 Hz loop</text>
+      <text x="725" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">validation</text>
+
+      <!-- Arrow -->
+      <line x1="800" y1="755" x2="840" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 5 -->
+      <rect x="840" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="915" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="915" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Real-World Test</text>
+      <text x="915" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Parking lot</text>
+      <text x="915" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Low-speed roads</text>
+      <text x="915" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">City streets</text>
+      <text x="915" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Freeways</text>
+
+      <!-- Arrow -->
+      <line x1="990" y1="755" x2="1030" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 6 -->
+      <rect x="1030" y="680" width="150" height="150" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+      <circle cx="1105" cy="700" r="10" fill="#ff6b6b"/>
+      <text x="1105" y="735" font-size="11" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Refinement</text>
+      <text x="1105" y="753" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Parameter tuning</text>
+      <text x="1105" y="765" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Edge cases</text>
+      <text x="1105" y="777" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Safety validation</text>
+      <text x="1105" y="789" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Performance</text>
+
+      <!-- Arrow -->
+      <line x1="1180" y1="755" x2="1220" y2="755" stroke="#ff6b6b" stroke-width="2.5" marker-end="url(#stepArrow)"/>
+
+      <!-- Step 7 -->
+      <rect x="1220" y="680" width="110" height="150" rx="10" fill="#00ff88" stroke="#00ff88" stroke-width="2.5"/>
+      <circle cx="1275" cy="700" r="10" fill="#fff"/>
+      <text x="1275" y="735" font-size="12" font-weight="bold" fill="#000" text-anchor="middle" font-family="Arial">Production</text>
+      <text x="1275" y="755" font-size="9" fill="#000" text-anchor="middle" font-family="Arial">Ready!</text>
+      <text x="1275" y="768" font-size="9" fill="#000" text-anchor="middle" font-family="Arial">✓</text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <text x="700" y="880" font-size="12" fill="#7fa0c0" text-anchor="middle" font-family="Arial">
+    Professional pipeline from simulation to production deployment | Same codebase throughout entire process
+  </text>
+</svg>

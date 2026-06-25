@@ -1,0 +1,218 @@
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="darkBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#07090f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="carlaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="bridgeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00d9ff;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="ros2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="nav2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ff6b9d;stop-opacity:0" />
+    </linearGradient>
+    <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity="0.4" flood-color="#000000"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#00d9ff"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="900" fill="url(#darkBg)"/>
+
+  <!-- Title -->
+  <text x="700" y="50" font-size="42" font-weight="900" fill="#00d9ff" text-anchor="middle" font-family="Arial, sans-serif">
+    Complete System Architecture
+  </text>
+  <text x="700" y="85" font-size="16" fill="#7fa0c0" text-anchor="middle" font-family="Arial">End-to-End Pipeline from Simulation to Vehicle Control</text>
+
+  <!-- LAYER 1: CARLA SIMULATOR -->
+  <g filter="url(#cardShadow)">
+    <rect x="80" y="140" width="240" height="200" rx="15" fill="#1e3a5f" stroke="#ffd700" stroke-width="2.5"/>
+    <rect x="80" y="140" width="240" height="50" rx="15" fill="url(#carlaGrad)"/>
+
+    <text x="200" y="175" font-size="18" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">CARLA UE5</text>
+    <text x="200" y="200" font-size="13" fill="#a0d9ff" text-anchor="middle" font-family="Arial">0.10.0</text>
+
+    <line x1="100" y1="220" x2="300" y2="220" stroke="#ffd700" stroke-width="1" opacity="0.3"/>
+
+    <text x="100" y="245" font-size="12" fill="#7fa0c0" font-family="Arial">• Ego Vehicle</text>
+    <text x="100" y="265" font-size="12" fill="#7fa0c0" font-family="Arial">• 3x Cameras</text>
+    <text x="100" y="285" font-size="12" fill="#7fa0c0" font-family="Arial">• Lidar (64-ray)</text>
+    <text x="100" y="305" font-size="12" fill="#7fa0c0" font-family="Arial">• IMU + GNSS</text>
+    <text x="100" y="325" font-size="12" fill="#7fa0c0" font-family="Arial">• Traffic Simulation</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <g>
+    <line x1="320" y1="240" x2="380" y2="240" stroke="#00d9ff" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="350" y="225" font-size="11" fill="#00d9ff" text-anchor="middle" font-family="Arial">Native ROS2</text>
+  </g>
+
+  <!-- LAYER 2: CARLA BRIDGE -->
+  <g filter="url(#cardShadow)">
+    <rect x="380" y="140" width="240" height="200" rx="15" fill="#1e3a5f" stroke="#00d9ff" stroke-width="2.5"/>
+    <rect x="380" y="140" width="240" height="50" rx="15" fill="url(#bridgeGrad)"/>
+
+    <text x="500" y="175" font-size="18" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Python Bridge</text>
+    <text x="500" y="200" font-size="13" fill="#a0d9ff" text-anchor="middle" font-family="Arial">CARLA API</text>
+
+    <line x1="400" y1="220" x2="600" y2="220" stroke="#00d9ff" stroke-width="1" opacity="0.3"/>
+
+    <text x="400" y="245" font-size="12" fill="#7fa0c0" font-family="Arial">• Ego Control</text>
+    <text x="400" y="265" font-size="12" fill="#7fa0c0" font-family="Arial">• World Sync (20Hz)</text>
+    <text x="400" y="285" font-size="12" fill="#7fa0c0" font-family="Arial">• Sensor Mgmt</text>
+    <text x="400" y="305" font-size="12" fill="#7fa0c0" font-family="Arial">• Pose Publishing</text>
+    <text x="400" y="325" font-size="12" fill="#7fa0c0" font-family="Arial">• UDP Interface</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <g>
+    <line x1="620" y1="240" x2="680" y2="240" stroke="#00d9ff" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="650" y="225" font-size="11" fill="#00d9ff" text-anchor="middle" font-family="Arial">DDS Topics</text>
+  </g>
+
+  <!-- LAYER 3: ROS2 NODE CLUSTER -->
+  <g filter="url(#cardShadow)">
+    <rect x="680" y="140" width="300" height="200" rx="15" fill="#1e3a5f" stroke="#00ff88" stroke-width="2.5"/>
+    <rect x="680" y="140" width="300" height="50" rx="15" fill="url(#ros2Grad)"/>
+
+    <text x="830" y="175" font-size="18" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">ROS2 Humble</text>
+    <text x="830" y="200" font-size="13" fill="#a0d9ff" text-anchor="middle" font-family="Arial">Node Cluster</text>
+
+    <line x1="700" y1="220" x2="960" y2="220" stroke="#00ff88" stroke-width="1" opacity="0.3"/>
+
+    <text x="700" y="245" font-size="12" fill="#7fa0c0" font-family="Arial">• Localization Node</text>
+    <text x="700" y="265" font-size="12" fill="#7fa0c0" font-family="Arial">• Lane Path Planner</text>
+    <text x="700" y="285" font-size="12" fill="#7fa0c0" font-family="Arial">• TF Broadcaster</text>
+    <text x="700" y="305" font-size="12" fill="#7fa0c0" font-family="Arial">• Sensor Aggregation</text>
+    <text x="700" y="325" font-size="12" fill="#7fa0c0" font-family="Arial">• State Management</text>
+  </g>
+
+  <!-- Arrow 3 -->
+  <g>
+    <line x1="980" y1="240" x2="1040" y2="240" stroke="#00d9ff" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="1010" y="225" font-size="11" fill="#00d9ff" text-anchor="middle" font-family="Arial">/odom, /tf</text>
+  </g>
+
+  <!-- LAYER 4: NAVIGATION2 -->
+  <g filter="url(#cardShadow)">
+    <rect x="1040" y="140" width="260" height="200" rx="15" fill="#1e3a5f" stroke="#ff6b9d" stroke-width="2.5"/>
+    <rect x="1040" y="140" width="260" height="50" rx="15" fill="url(#nav2Grad)"/>
+
+    <text x="1170" y="175" font-size="18" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">Navigation2</text>
+    <text x="1170" y="200" font-size="13" fill="#a0d9ff" text-anchor="middle" font-family="Arial">Stack</text>
+
+    <line x1="1060" y1="220" x2="1280" y2="220" stroke="#ff6b9d" stroke-width="1" opacity="0.3"/>
+
+    <text x="1060" y="245" font-size="12" fill="#7fa0c0" font-family="Arial">• Costmap 2D</text>
+    <text x="1060" y="265" font-size="12" fill="#7fa0c0" font-family="Arial">• Path Planner</text>
+    <text x="1060" y="285" font-size="12" fill="#7fa0c0" font-family="Arial">• Pure Pursuit</text>
+    <text x="1060" y="305" font-size="12" fill="#7fa0c0" font-family="Arial">• Controller (20Hz)</text>
+    <text x="1060" y="325" font-size="12" fill="#7fa0c0" font-family="Arial">• Safety Layer</text>
+  </g>
+
+  <!-- Feedback loop arrow -->
+  <path d="M 1170 340 Q 1170 430 200 430 Q 200 340 200 340" stroke="#ff6b6b" stroke-width="2.5" fill="none" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+  <text x="700" y="450" font-size="12" fill="#ff6b6b" text-anchor="middle" font-family="Arial" font-weight="bold">← Closed Control Loop (20 Hz) →</text>
+
+  <!-- MIDDLE SECTION: DATA FLOWS -->
+  <text x="700" y="510" font-size="20" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Real-Time Data Flows</text>
+
+  <!-- Input data -->
+  <g>
+    <!-- Camera data -->
+    <rect x="80" y="560" width="130" height="110" rx="10" fill="#2a3f5f" stroke="#ff6b6b" stroke-width="2"/>
+    <circle cx="145" cy="585" r="8" fill="#ff6b6b"/>
+    <text x="145" y="610" font-size="13" font-weight="bold" fill="#ff6b6b" text-anchor="middle" font-family="Arial">Camera Data</text>
+    <text x="145" y="630" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">3x RGB Images</text>
+    <text x="145" y="643" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">1280×720 @ 30Hz</text>
+
+    <!-- Lidar data -->
+    <rect x="240" y="560" width="130" height="110" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+    <circle cx="305" cy="585" r="8" fill="#00ff88"/>
+    <text x="305" y="610" font-size="13" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">Lidar Data</text>
+    <text x="305" y="630" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Point Cloud</text>
+    <text x="305" y="643" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">360° @ 20Hz</text>
+
+    <!-- Ground Truth -->
+    <rect x="400" y="560" width="130" height="110" rx="10" fill="#2a3f5f" stroke="#ffd700" stroke-width="2"/>
+    <circle cx="465" cy="585" r="8" fill="#ffd700"/>
+    <text x="465" y="610" font-size="13" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">Ground Truth</text>
+    <text x="465" y="630" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Position, Velocity</text>
+    <text x="465" y="643" font-size="10" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Orientation</text>
+  </g>
+
+  <!-- Processing blocks -->
+  <g>
+    <line x1="145" y1="560" x2="200" y2="500" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="3,3" opacity="0.5"/>
+    <line x1="305" y1="560" x2="350" y2="500" stroke="#00ff88" stroke-width="2" stroke-dasharray="3,3" opacity="0.5"/>
+    <line x1="465" y1="560" x2="500" y2="500" stroke="#ffd700" stroke-width="2" stroke-dasharray="3,3" opacity="0.5"/>
+  </g>
+
+  <!-- Output section -->
+  <text x="700" y="730" font-size="20" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Control Outputs & Status</text>
+
+  <!-- Output boxes -->
+  <g>
+    <!-- Velocity Command -->
+    <rect x="80" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+    <circle cx="150" cy="790" r="7" fill="#00d9ff"/>
+    <text x="150" y="813" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">/cmd_vel</text>
+    <text x="150" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Linear: -2 to 5 m/s</text>
+    <text x="150" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Angular: ±1 rad/s</text>
+
+    <!-- Costmap -->
+    <rect x="260" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#00ff88" stroke-width="2"/>
+    <circle cx="330" cy="790" r="7" fill="#00ff88"/>
+    <text x="330" y="813" font-size="12" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">Costmap 2D</text>
+    <text x="330" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">100x100 grid</text>
+    <text x="330" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">20Hz updates</text>
+
+    <!-- Odometry -->
+    <rect x="440" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="2"/>
+    <circle cx="510" cy="790" r="7" fill="#ff6b9d"/>
+    <text x="510" y="813" font-size="12" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">/odom</text>
+    <text x="510" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Position & Velocity</text>
+    <text x="510" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Orientation</text>
+
+    <!-- Status -->
+    <rect x="620" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#ffa500" stroke-width="2"/>
+    <circle cx="690" cy="790" r="7" fill="#ffa500"/>
+    <text x="690" y="813" font-size="12" font-weight="bold" fill="#ffa500" text-anchor="middle" font-family="Arial">System Status</text>
+    <text x="690" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Health metrics</text>
+    <text x="690" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Error flags</text>
+
+    <!-- Visualization -->
+    <rect x="800" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#00ffff" stroke-width="2"/>
+    <circle cx="870" cy="790" r="7" fill="#00ffff"/>
+    <text x="870" y="813" font-size="12" font-weight="bold" fill="#00ffff" text-anchor="middle" font-family="Arial">Visualization</text>
+    <text x="870" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">RViz, Rerun</text>
+    <text x="870" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Live debugging</text>
+
+    <!-- Real Vehicle -->
+    <rect x="980" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#ff3333" stroke-width="2.5"/>
+    <circle cx="1050" cy="790" r="7" fill="#ff3333"/>
+    <text x="1050" y="813" font-size="12" font-weight="bold" fill="#ff3333" text-anchor="middle" font-family="Arial">Vehicle Control</text>
+    <text x="1050" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Steering Angle</text>
+    <text x="1050" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">Throttle/Brake</text>
+
+    <!-- Performance -->
+    <rect x="1160" y="770" width="140" height="100" rx="10" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+    <circle cx="1230" cy="790" r="7" fill="#00d9ff"/>
+    <text x="1230" y="813" font-size="12" font-weight="bold" fill="#00d9ff" text-anchor="middle" font-family="Arial">Performance</text>
+    <text x="1230" y="830" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">20Hz loop time</text>
+    <text x="1230" y="843" font-size="9" fill="#7fa0c0" text-anchor="middle" font-family="Arial">CPU, memory</text>
+  </g>
+</svg>

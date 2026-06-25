@@ -1,0 +1,117 @@
+<svg viewBox="0 0 1400 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0e17;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a2847;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f1419;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00ffaa;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffa500;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="heroShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glow2" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="500" fill="url(#heroBg)"/>
+
+  <!-- Animated background elements -->
+  <circle cx="100" cy="100" r="150" fill="#00d9ff" opacity="0.05"/>
+  <circle cx="1300" cy="400" r="200" fill="#ff6b9d" opacity="0.05"/>
+  <circle cx="700" cy="250" r="100" fill="#00ffaa" opacity="0.03"/>
+
+  <!-- Left side: Text content -->
+  <g>
+    <!-- Main title -->
+    <text x="80" y="80" font-size="56" font-weight="900" fill="url(#titleGrad)" font-family="Arial, sans-serif" letter-spacing="-2">
+      CARLA + ROS2
+    </text>
+    <text x="80" y="150" font-size="56" font-weight="900" fill="url(#titleGrad)" font-family="Arial, sans-serif" letter-spacing="-2">
+      Navigation Stack
+    </text>
+
+    <!-- Subtitle -->
+    <text x="80" y="200" font-size="20" fill="#a0d9ff" font-family="Arial, sans-serif" font-weight="300">
+      Professional Autonomous Driving Pipeline
+    </text>
+
+    <!-- Key stats -->
+    <g>
+      <!-- Stat 1 -->
+      <rect x="80" y="240" width="280" height="70" rx="8" fill="rgba(0, 217, 255, 0.1)" stroke="#00d9ff" stroke-width="1.5"/>
+      <circle cx="110" cy="275" r="12" fill="#00d9ff"/>
+      <text x="140" y="278" font-size="14" font-weight="bold" fill="#00d9ff" font-family="Arial">Sim-to-Real Pipeline</text>
+      <text x="140" y="295" font-size="12" fill="#7fa0c0" font-family="Arial">CARLA → Real Vehicle</text>
+
+      <!-- Stat 2 -->
+      <rect x="390" y="240" width="280" height="70" rx="8" fill="rgba(255, 165, 0, 0.1)" stroke="#ffa500" stroke-width="1.5"/>
+      <circle cx="420" cy="275" r="12" fill="#ffa500"/>
+      <text x="450" y="278" font-size="14" font-weight="bold" fill="#ffa500" font-family="Arial">20 Hz Control Loop</text>
+      <text x="450" y="295" font-size="12" fill="#7fa0c0" font-family="Arial">Real-time Processing</text>
+
+      <!-- Stat 3 -->
+      <rect x="80" y="330" width="280" height="70" rx="8" fill="rgba(0, 255, 136, 0.1)" stroke="#00ff88" stroke-width="1.5"/>
+      <circle cx="110" cy="365" r="12" fill="#00ff88"/>
+      <text x="140" y="368" font-size="14" font-weight="bold" fill="#00ff88" font-family="Arial">Production Grade</text>
+      <text x="140" y="385" font-size="12" fill="#7fa0c0" font-family="Arial">Professional Stack</text>
+
+      <!-- Stat 4 -->
+      <rect x="390" y="330" width="280" height="70" rx="8" fill="rgba(255, 107, 157, 0.1)" stroke="#ff6b9d" stroke-width="1.5"/>
+      <circle cx="420" cy="365" r="12" fill="#ff6b9d"/>
+      <text x="450" y="368" font-size="14" font-weight="bold" fill="#ff6b9d" font-family="Arial">3x Camera System</text>
+      <text x="450" y="385" font-size="12" fill="#7fa0c0" font-family="Arial">Multi-view Perception</text>
+    </g>
+  </g>
+
+  <!-- Right side: Visual elements -->
+  <g filter="url(#glow2)">
+    <!-- Vehicle silhouette -->
+    <g transform="translate(1050, 150)">
+      <!-- Main body -->
+      <rect x="0" y="20" width="280" height="160" rx="30" fill="#1a2a4f" stroke="#00d9ff" stroke-width="2"/>
+
+      <!-- Front section -->
+      <path d="M 0 50 L 40 30 L 280 30 L 280 50 Z" fill="#2a3f5f" stroke="#00d9ff" stroke-width="2"/>
+
+      <!-- Wheels -->
+      <circle cx="50" cy="180" r="18" fill="none" stroke="#00d9ff" stroke-width="2"/>
+      <circle cx="230" cy="180" r="18" fill="none" stroke="#00d9ff" stroke-width="2"/>
+
+      <!-- Cameras (front, left, right) -->
+      <circle cx="140" cy="35" r="8" fill="#ff6b6b" stroke="#ff0000" stroke-width="1.5"/>
+      <circle cx="20" cy="90" r="7" fill="#ffd700" stroke="#ffaa00" stroke-width="1.5"/>
+      <circle cx="260" cy="90" r="7" fill="#ffd700" stroke="#ffaa00" stroke-width="1.5"/>
+
+      <!-- Lidar on top -->
+      <circle cx="140" cy="0" r="10" fill="#00ff88" stroke="#00dd00" stroke-width="1.5"/>
+    </g>
+
+    <!-- Tech stack icons on right -->
+    <g transform="translate(1050, 350)">
+      <!-- CARLA -->
+      <rect x="0" y="0" width="55" height="55" rx="8" fill="#2a3f5f" stroke="#ffd700" stroke-width="1.5"/>
+      <text x="27" y="35" font-size="11" font-weight="bold" fill="#ffd700" text-anchor="middle" font-family="Arial">CARLA</text>
+
+      <!-- ROS2 -->
+      <rect x="70" y="0" width="55" height="55" rx="8" fill="#2a3f5f" stroke="#00ff88" stroke-width="1.5"/>
+      <text x="97" y="35" font-size="11" font-weight="bold" fill="#00ff88" text-anchor="middle" font-family="Arial">ROS2</text>
+
+      <!-- Nav2 -->
+      <rect x="140" y="0" width="55" height="55" rx="8" fill="#2a3f5f" stroke="#ff6b9d" stroke-width="1.5"/>
+      <text x="167" y="35" font-size="11" font-weight="bold" fill="#ff6b9d" text-anchor="middle" font-family="Arial">Nav2</text>
+    </g>
+  </g>
+
+  <!-- Bottom accent bar -->
+  <rect x="0" y="480" width="1400" height="20" fill="url(#accentGrad)"/>
+</svg>
