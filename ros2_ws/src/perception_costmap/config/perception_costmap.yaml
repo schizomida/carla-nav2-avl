@@ -1,0 +1,38 @@
+perception_costmap:
+  ros__parameters:
+    # --- input topics (remap these to your CARLA / real sensor topics) ---
+    image_topic: /camera/image
+    camera_info_topic: /camera/camera_info
+    lidar_topic: /lidar/points
+
+    # --- output topics (consumed by Nav2) ---
+    costmap_topic: /perception/costmap
+    obstacle_points_topic: /perception/obstacle_points
+
+    publish_rate: 10.0
+    frame_id: base_link
+
+    # --- grid extent (metres, robot frame: +x forward, +y left) ---
+    x_min: -4.0
+    x_max: 16.0
+    y_min: -10.0
+    y_max: 10.0
+    resolution: 0.1
+
+    # --- perception ---
+    segmentation_method: hsv      # hsv | twinlitenet (learned, not wired yet)
+    use_camera_obstacles: true
+    use_lidar: true
+    lidar_z_min: 0.2              # drop ground returns below this height
+    lidar_z_max: 2.5             # drop returns above the roofline
+
+    # --- inverse-perspective mapping ---
+    # "points": 4 image pixels + their ground positions (calibrate per camera).
+    # "camera": derive from camera_info K + mounting below.
+    ipm_mode: points
+    # [u1,v1, u2,v2, u3,v3, u4,v4]
+    ipm_image_pts: [0.0, 160.0, 640.0, 160.0, 640.0, 320.0, 0.0, 320.0]
+    # [x1,y1, x2,y2, x3,y3, x4,y4]  (metres, x fwd / y left)
+    ipm_world_pts: [18.0, -8.0, 18.0, 8.0, 3.0, 4.0, 3.0, -4.0]
+    cam_height: 1.6
+    cam_pitch_deg: 10.0
