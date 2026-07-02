@@ -147,4 +147,8 @@ def draw_grid_on_image(img_bgr, H, grid: GridSpec, spacing_m=1.0):
         pts = [p for p in pts if p is not None]
         for a, b in zip(pts, pts[1:]):
             cv2.line(out, a, b, (0, 255, 0), 1)
+        if pts:
+            # signed label so a left-right-mirrored homography is visible
+            cv2.putText(out, "y=%+gm" % y, pts[0], cv2.FONT_HERSHEY_SIMPLEX,
+                        0.4, (0, 255, 255), 1)
     return out

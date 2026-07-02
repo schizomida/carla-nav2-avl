@@ -49,7 +49,9 @@ perception_costmap:
       camera_info_topic: /camera/front/camera_info
       ipm_mode: points           # points | camera
       ipm_image_pts: [0.0, 160.0, 640.0, 160.0, 640.0, 320.0, 0.0, 320.0]
-      ipm_world_pts: [18.0, -8.0, 18.0, 8.0, 3.0, 4.0, 3.0, -4.0]
+      # order pairs image-left with +y (world left, REP-103); values are
+      # placeholders -- calibrate per camera
+      ipm_world_pts: [18.0, 8.0, 18.0, -8.0, 3.0, -4.0, 3.0, 4.0]
       cam_x: 0.0
       cam_y: 0.0
       cam_height: 1.6
@@ -59,8 +61,9 @@ perception_costmap:
 
     # --- freshness ---
     # drop stale sensor data instead of building a costmap from a frozen
-    # frame; requires use_sim_time so the node clock and CARLA stamps share
-    # the same timeline
+    # frame. Freshness compares msg stamps to the node clock: with CARLA's
+    # native ROS2 output set use_sim_time; with tools/carla_feed.py leave it
+    # unset (wall clock on both sides).
     image_stale_sec: 0.5
     lidar_stale_sec: 0.5
 

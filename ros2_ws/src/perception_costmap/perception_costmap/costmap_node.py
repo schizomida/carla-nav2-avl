@@ -38,7 +38,7 @@ class CameraSource:
         self.image_pts = np.array(d("ipm_image_pts",
             [0.0, 160.0, 640.0, 160.0, 640.0, 320.0, 0.0, 320.0]), float).reshape(4, 2)
         self.world_pts = np.array(d("ipm_world_pts",
-            [18.0, -8.0, 18.0, 8.0, 3.0, 4.0, 3.0, -4.0]), float).reshape(4, 2)
+            [18.0, 8.0, 18.0, -8.0, 3.0, -4.0, 3.0, 4.0]), float).reshape(4, 2)
         self.cam_xyz = (d("cam_x", 0.0), d("cam_y", 0.0), d("cam_height", 1.6))
         self.pitch = d("cam_pitch_deg", 10.0)
         self.yaw = d("cam_yaw_deg", 0.0)
