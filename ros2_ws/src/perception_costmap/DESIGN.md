@@ -42,31 +42,62 @@ topics; the perception node and Nav2 config are unchanged).
 
 ## Pipeline
 
+Per camera in `cameras: [...]` (e.g. `front`, and on the car `left`/`right`):
+
 ```
 camera Image ─┐
-              ├─► segmentation.py ─► road mask ─┐
-CameraInfo  ──┘                                 │
-                                  bev.py (IPM)   ├─► occupancy.py ─► /perception/costmap
-camera Image ─► obstacles.py ─► obstacle mask ──┘                    (OccupancyGrid)
+              ├─► segmentation.py (factory: hsv | twinlitenet) ─► road mask ─┐
+CameraInfo  ──┘                                                              │
+                                              bev.py (per-camera,            ├─► fused BEV grid
+camera Image ─► obstacles.py (classical|yolo|both) ─► obstacle mask ────────┘   (road / known / obstacles,
+                                              yaw-aware homography)              OR'd across cameras)
 
-lidar PointCloud2 ─► obstacles.py (ground filter + cluster) ─────► /perception/obstacle_points
-                                                                    (PointCloud2)
+lidar PointCloud2 ─► obstacles.py (ground filter + cluster) ──► obstacle_points ─┘   |
+                                                                    (PointCloud2)     ▼
+                                                                          temporal.py (per-cell
+                                                                          confidence filter)
+                                                                                       │
+                                                                                       ▼
+                                                                    occupancy.py ─► /perception/costmap
+                                                                                    (OccupancyGrid)
 ```
 
-- **segmentation.py** — drivable-road mask. Start classical (HSV threshold,
-  largest blob — reused from Adam Castillo's `perception/costmap.py`), with a
-  learned model (TwinLiteNet+) pluggable behind the same interface.
-- **obstacles.py** — obstacle mask from the camera (classical contrast / YOLO)
-  and obstacle points from lidar (remove ground plane, keep what's above it).
-- **bev.py** — inverse-perspective mapping: warp the camera/segmentation from
-  image space to a top-down metric grid using a homography. The homography
-  comes from camera intrinsics + mounting (height/pitch); calibratable from a
-  single frame via 4 point correspondences. In CARLA we know these exactly; on
-  the car we calibrate once.
+- **segmentation.py** — a factory selects the road-mask backend by
+  `segmentation_method`: `hsv` (threshold + largest blob, reused from Adam
+  Castillo's `perception/costmap.py`) or `twinlitenet` (a TwinLiteNet+
+  adapter, loaded once, output cropped to content extent). The learned path
+  warm-loads at startup and falls back to `hsv` on any load failure, so a
+  missing model/weights never takes the node down.
+- **obstacles.py** — obstacle mask from the camera (`obstacle_method`:
+  `classical` contrast, `yolo` — a YOLOv8 detector loaded once that
+  rasterizes a footprint strip per detection box, or `both` unioned) and
+  obstacle points from lidar (remove ground plane by z-band, keep what's
+  above it). YOLO also warm-loads with a fallback to `classical`.
+- **bev.py** — inverse-perspective mapping: per camera, warp its
+  segmentation/obstacle mask from image space into the shared top-down metric
+  grid using that camera's homography. The homography comes from either 4
+  point correspondences (`ipm_mode: points`) or camera intrinsics + yaw-aware
+  extrinsics (`ipm_mode: camera`, `homography_from_extrinsics`,
+  `cam_x/y/height/pitch/yaw`); calibratable from a single frame. In CARLA we
+  know these exactly; on the car we calibrate once per camera with
+  `tools/ipm_overlay.py`.
+- **Multi-camera fusion** (in `costmap_node.py`) — each configured camera
+  contributes independently; the fused BEV grid is the OR of road / known /
+  obstacle cells across all cameras plus lidar. If lidar is the only fresh
+  sensor on a given tick (all cameras stale), the grid still publishes with
+  everything `UNKNOWN` except lidar-detected obstacles, rather than skipping
+  the tick.
+- **temporal.py** — a per-cell confidence filter smooths obstacle flicker
+  across ticks: confidence rises by `temporal_hit` when a cell is detected as
+  an obstacle, decays by `temporal_miss` when the cell is *observed* (inside
+  the fused camera FOV, or the whole grid when lidar is active) but empty,
+  and the cell reports lethal only once confidence crosses
+  `temporal_threshold`. Disabled entirely via `temporal_enabled: false`.
 - **occupancy.py** — fuse masks into a `nav_msgs/OccupancyGrid` with correct
   metadata (resolution, origin, frame). This is the offline-testable heart.
-- **costmap_node.py** — the ROS2 node wiring subscriptions → modules →
-  publishers, all parameterized.
+- **costmap_node.py** — the ROS2 node wiring subscriptions (per-camera +
+  lidar, sensor-data QoS, staleness guards) → modules → publishers, all
+  parameterized.
 
 ## Grid geometry
 
@@ -82,11 +113,15 @@ lidar PointCloud2 ─► obstacles.py (ground filter + cluster) ─────�
 
 | Topic | Type | Dir |
 |-------|------|-----|
-| `/camera/image` | `sensor_msgs/Image` | in |
-| `/camera/camera_info` | `sensor_msgs/CameraInfo` | in |
-| `/lidar/points` | `sensor_msgs/PointCloud2` | in (optional) |
+| `<camera>/image_topic` (one per name in `cameras: [...]`, e.g. `/camera/front/image`) | `sensor_msgs/Image` | in |
+| `<camera>/camera_info_topic` (e.g. `/camera/front/camera_info`) | `sensor_msgs/CameraInfo` | in |
+| `/lidar/points` (remappable via the `lidar_topic` launch arg) | `sensor_msgs/PointCloud2` | in (optional) |
 | `/perception/costmap` | `nav_msgs/OccupancyGrid` | out |
 | `/perception/obstacle_points` | `sensor_msgs/PointCloud2` | out |
+
+Camera topics are all-in-YAML, not launch args — see the per-camera blocks in
+`config/perception_costmap.yaml`. Only `lidar_topic` is a launch arg (there's
+one lidar).
 
 Frames: `map → odom → base_link → camera/lidar`. Perception publishes in
 `base_link`; Nav2 handles the rest via TF.
@@ -116,8 +151,17 @@ messages.
 
 ## Calibration / known TODOs
 
-- IPM homography needs real numbers from CameraInfo + camera mounting; ships
-  with a flagged placeholder until calibrated.
-- HSV road thresholds are lighting-dependent; the learned seg path exists to
-  remove that fragility.
+- Every camera's IPM homography needs real numbers from CameraInfo + mounting
+  (`cam_x/y/height/pitch/yaw` or 4 point correspondences); the YAML ships
+  with placeholder values per camera until calibrated with
+  `tools/ipm_overlay.py`.
+- HSV road thresholds are lighting-dependent; the `twinlitenet` seg path
+  exists to remove that fragility, but hasn't been run end-to-end against
+  real weights here yet.
 - Lidar ground-plane removal assumes roughly flat ground near the car.
+- `temporal_hit` / `temporal_miss` / `temporal_threshold` were chosen to be
+  reasonable, not measured against real obstacle flicker rates; revisit once
+  there's a real camera feed to tune against.
+- TensorRT export (`tools/export_trt.py`) and the perception bench
+  (`tools/bench_perception.py`) need to be re-run on the Jetson itself —
+  numbers from this laptop don't transfer (different CPU/GPU, no TensorRT).
