@@ -110,3 +110,41 @@ def bev_known_mask(H, image_shape, grid: GridSpec) -> np.ndarray:
     ones = np.full((h, w), 255, dtype=np.uint8)
     warped = warp_to_bev(ones, H, grid)
     return warped > 0
+
+
+def draw_grid_on_image(img_bgr, H, grid: GridSpec, spacing_m=1.0):
+    """
+    Project the metric grid back into the camera image (green lines every
+    spacing_m). Human calibration check: stand a marker at a known distance
+    and confirm the drawn line lands on it. H maps image->grid, so we draw
+    with its inverse.
+    """
+    out = img_bgr.copy()
+    Hinv = np.linalg.inv(H)
+    h, w = img_bgr.shape[:2]
+
+    def world_to_px(x, y):
+        col = (x - grid.x_min) / grid.resolution
+        row = (y - grid.y_min) / grid.resolution
+        p = Hinv @ np.array([col, row, 1.0])
+        if abs(p[2]) < 1e-9:
+            return None
+        u, v = p[0] / p[2], p[1] / p[2]
+        if -w <= u <= 2 * w and -h <= v <= 2 * h:
+            return int(round(u)), int(round(v))
+        return None
+
+    for x in np.arange(np.ceil(grid.x_min), grid.x_max + 1e-6, spacing_m):
+        pts = [world_to_px(x, y) for y in np.linspace(grid.y_min, grid.y_max, 40)]
+        pts = [p for p in pts if p is not None]
+        for a, b in zip(pts, pts[1:]):
+            cv2.line(out, a, b, (0, 255, 0), 1)
+        if pts:
+            cv2.putText(out, "%gm" % x, pts[0], cv2.FONT_HERSHEY_SIMPLEX,
+                        0.4, (0, 255, 255), 1)
+    for y in np.arange(np.ceil(grid.y_min), grid.y_max + 1e-6, spacing_m):
+        pts = [world_to_px(x, y) for x in np.linspace(max(0.5, grid.x_min), grid.x_max, 40)]
+        pts = [p for p in pts if p is not None]
+        for a, b in zip(pts, pts[1:]):
+            cv2.line(out, a, b, (0, 255, 0), 1)
+    return out

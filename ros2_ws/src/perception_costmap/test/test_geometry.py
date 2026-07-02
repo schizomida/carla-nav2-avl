@@ -143,3 +143,16 @@ def test_yawed_camera_rotates_ground_points():
     xl, yl = _px_to_world(H_left, u, v, g)
     # rotating the camera +90 deg (left) maps (x, y) -> (-y, x)
     assert abs(xl - (-yf)) < 0.05 and abs(yl - xf) < 0.05
+
+
+def test_draw_grid_overlay_changes_pixels_and_preserves_input():
+    from perception_costmap.bev import draw_grid_on_image
+    g = GridSpec(x_min=0, x_max=10, y_min=-5, y_max=5, resolution=0.1)
+    img_pts = [(0, 200), (640, 200), (640, 360), (0, 360)]
+    wld_pts = [(10, 5), (10, -5), (2, -2), (2, 2)]
+    H = bev.homography_from_points(img_pts, wld_pts, g)
+    img = np.zeros((360, 640, 3), np.uint8)
+    out = draw_grid_on_image(img, H, g)
+    assert out.shape == img.shape
+    assert out.any()                 # lines were drawn
+    assert not img.any()             # input untouched
