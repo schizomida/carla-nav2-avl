@@ -52,6 +52,9 @@ class CostmapNode(Node):
             ("yolo_weights", "yolov8n.pt"),
             ("yolo_conf", 0.35),
             ("yolo_footprint_frac", 0.25),
+            ("twinlite_repo_path", ""),
+            ("twinlite_weights", ""),
+            ("twinlite_config", "nano"),
             ("lidar_z_min", 0.2), ("lidar_z_max", 2.5),
             # IPM: "points" uses image_pts/world_pts; "camera" uses K+mounting
             ("ipm_mode", "points"),
@@ -72,7 +75,6 @@ class CostmapNode(Node):
             y_min=g["y_min"], y_max=g["y_max"],
             resolution=g["resolution"], frame_id=g["frame_id"],
         )
-        self.seg_method = g["segmentation_method"]
         self.use_cam_obs = g["use_camera_obstacles"]
         self.use_lidar = g["use_lidar"]
         self.obstacle_method = g["obstacle_method"]
@@ -100,6 +102,17 @@ class CostmapNode(Node):
             except Exception as e:
                 self.get_logger().warn(
                     "YOLO unavailable (%s); falling back to classical" % e)
+
+        try:
+            if g["segmentation_method"] == "twinlitenet":
+                self.segmenter = segmentation.create_segmenter(
+                    "twinlitenet", repo_path=g["twinlite_repo_path"],
+                    weights=g["twinlite_weights"], config=g["twinlite_config"])
+            else:
+                self.segmenter = segmentation.create_segmenter("hsv")
+        except Exception as e:                     # missing torch/weights/paths
+            self.get_logger().warn("twinlitenet unavailable (%s); using hsv" % e)
+            self.segmenter = segmentation.create_segmenter("hsv")
 
         self._bridge = None          # cv_bridge, created lazily
         self._latest_img = None      # bgr ndarray
@@ -172,7 +185,7 @@ class CostmapNode(Node):
             and is_fresh(self._img_stamp, now, self.img_stale)
         )
         if img_fresh and self._ensure_homography(self._latest_img.shape):
-            road = segmentation.segment_road(self._latest_img, method=self.seg_method)
+            road = self.segmenter(self._latest_img)
             road_bev = bev.warp_to_bev(road.astype(np.uint8) * 255, self._H, self.grid) > 127
             known = self._known
             if self.use_cam_obs:

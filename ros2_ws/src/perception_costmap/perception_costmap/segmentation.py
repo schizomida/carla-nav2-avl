@@ -41,14 +41,79 @@ def segment_road_hsv(img_bgr,
     return mask > 0
 
 
+def letterbox(img, new_size=640, pad_color=(114, 114, 114)):
+    """Aspect-preserving resize + gray padding to new_size x new_size.
+    (Same scheme as perception/twinLiteNetTest.py / the YOLO family.)"""
+    h, w = img.shape[:2]
+    ratio = min(new_size / h, new_size / w)
+    new_w, new_h = int(round(w * ratio)), int(round(h * ratio))
+    pad_w, pad_h = (new_size - new_w) / 2, (new_size - new_h) / 2
+    resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+    top, bottom = int(round(pad_h - 0.1)), int(round(pad_h + 0.1))
+    left, right = int(round(pad_w - 0.1)), int(round(pad_w + 0.1))
+    padded = cv2.copyMakeBorder(resized, top, bottom, left, right,
+                                cv2.BORDER_CONSTANT, value=pad_color)
+    return padded, ratio, (left, top)
+
+
+class HsvSegmenter:
+    """Classical fallback -- zero deps, calibrate HSV ranges per camera."""
+    def __init__(self, **kw):
+        self.kw = kw
+
+    def __call__(self, img_bgr):
+        return segment_road_hsv(img_bgr, **self.kw)
+
+
+class TwinLiteSegmenter:
+    """
+    TwinLiteNet+ drivable-area head as a road segmenter.
+
+    Setup (once): clone https://github.com/chequanghuy/TwinLiteNetPlus and
+    download nano.pth -- full instructions in perception/twinLiteNetTest.py.
+    Loads the network ONCE at construction; __call__ is inference only.
+    """
+    def __init__(self, repo_path, weights, config="nano", img_size=640,
+                 device=None):
+        import sys, argparse
+        import torch                       # lazy: optional dependency
+        self.torch = torch
+        if str(repo_path) not in sys.path:
+            sys.path.insert(0, str(repo_path))
+        from model.model import TwinLiteNetPlus   # from the cloned repo
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        model = TwinLiteNetPlus(argparse.Namespace(config=config))
+        model.load_state_dict(torch.load(weights, map_location=self.device))
+        self.model = model.to(self.device).eval()
+        self.img_size = img_size
+
+    def __call__(self, img_bgr):
+        torch = self.torch
+        h, w = img_bgr.shape[:2]
+        padded, _, (pl, pt) = letterbox(img_bgr, self.img_size)
+        with torch.no_grad():
+            t = torch.from_numpy(padded).to(self.device).float()
+            t = t.permute(2, 0, 1).unsqueeze(0) / 255.0
+            da_out, _ = self.model(t)          # (drivable-area, lanes)
+        da = da_out[:, :, pt:self.img_size - pt, pl:self.img_size - pl]
+        da = torch.nn.functional.interpolate(da, size=(h, w), mode="bilinear")
+        return (torch.argmax(da, dim=1).squeeze(0).cpu().numpy() == 1)
+
+
+def create_segmenter(method="hsv", **kw):
+    """Factory: 'hsv' (classical, no deps) or 'twinlitenet' (learned,
+    needs torch + cloned repo + weights -- kw: repo_path, weights, config)."""
+    if method == "hsv":
+        return HsvSegmenter(**kw)
+    if method == "twinlitenet":
+        return TwinLiteSegmenter(**kw)
+    raise ValueError("unknown segmentation method: %r" % (method,))
+
+
 def segment_road(img_bgr, method: str = "hsv", **kw) -> np.ndarray:
     """
-    Dispatch to a road-segmentation backend. 'hsv' is the classical default;
-    'twinlitenet' is reserved for the learned model (not wired in yet).
+    Dispatch to a road-segmentation backend via the factory. 'hsv' is the
+    classical default; 'twinlitenet' is the learned model (needs torch +
+    a cloned TwinLiteNetPlus repo + weights -- see create_segmenter).
     """
-    if method == "hsv":
-        return segment_road_hsv(img_bgr, **kw)
-    if method == "twinlitenet":
-        raise NotImplementedError(
-            "learned segmentation not wired in yet; see perception/twinLiteNetTest.py")
-    raise ValueError(f"unknown segmentation method: {method!r}")
+    return create_segmenter(method, **kw)(img_bgr)

@@ -20,7 +20,7 @@ perception_costmap:
     resolution: 0.1
 
     # --- perception ---
-    segmentation_method: hsv      # hsv | twinlitenet (learned, not wired yet)
+    segmentation_method: hsv      # hsv | twinlitenet (learned, needs torch + weights)
     use_camera_obstacles: true
     use_lidar: true
     # obstacle_method: classical = no deps, yolo = accurate classes + Jetson
@@ -30,6 +30,13 @@ perception_costmap:
     yolo_weights: yolov8n.pt      # .pt or .engine (TensorRT, Jetson)
     yolo_conf: 0.35
     yolo_footprint_frac: 0.25
+    # twinlitenet: only used when segmentation_method is twinlitenet; needs a
+    # cloned TwinLiteNetPlus repo + downloaded weights (see
+    # perception/twinLiteNetTest.py), falls back to hsv (with a warning) if
+    # torch/paths/weights are missing.
+    twinlite_repo_path: ""
+    twinlite_weights: ""
+    twinlite_config: nano
     lidar_z_min: 0.2              # drop ground returns below this height
     lidar_z_max: 2.5             # drop returns above the roofline
 
