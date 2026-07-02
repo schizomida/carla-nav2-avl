@@ -17,7 +17,6 @@ publishes:
 import argparse
 import math
 import sys
-import time
 from pathlib import Path
 
 import numpy as np
@@ -130,14 +129,15 @@ def main():
     rgb.listen(on_rgb)
     sem.listen(on_sem)
     lidar.listen(on_lidar)
-    print("feeding ROS2. camera K published from FOV; IPM 'camera' mode: "
-          "cam_height=%.2f pitch=%.1f. Ctrl-C to stop." % (CAM_Z, -CAM_PITCH))
+    print("feeding ROS2. IPM 'camera' mode params for the YAML: cam_x=%.2f cam_height=%.2f cam_pitch_deg=%.1f. Ctrl-C to stop." % (CAM_X, CAM_Z, -CAM_PITCH))
     try:
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.1)
     except KeyboardInterrupt:
         pass
     finally:
+        for s in (rgb, sem, lidar):
+            s.stop()
         for a in (rgb, sem, lidar, ego):
             a.destroy()
         node.destroy_node()
