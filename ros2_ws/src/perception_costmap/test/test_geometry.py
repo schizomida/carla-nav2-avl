@@ -7,6 +7,7 @@ from perception_costmap.occupancy import (
     GridSpec, build_cost_array, UNKNOWN, FREE, LETHAL,
 )
 from perception_costmap import bev
+from perception_costmap.obstacles import points_to_grid_mask
 
 
 def test_gridspec_dimensions():
@@ -93,3 +94,20 @@ def test_known_mask_is_subset_of_grid():
     assert known.shape == (g.height, g.width)
     assert known.any()                 # camera sees *something*
     assert not known.all()             # but not the whole grid
+
+
+def test_points_to_grid_mask_vectorized_matches_cells():
+    g = GridSpec(x_min=0, x_max=2, y_min=0, y_max=2, resolution=1.0)
+    pts = np.array([[0.5, 0.5, 1.0],    # cell (col 0, row 0)
+                    [1.5, 0.5, 1.0],    # cell (col 1, row 0)
+                    [9.0, 9.0, 1.0]])   # out of grid, dropped
+    m = points_to_grid_mask(pts, g)
+    assert m.shape == (2, 2)
+    assert m[0, 0] and m[0, 1]
+    assert m.sum() == 2
+
+
+def test_points_to_grid_mask_empty():
+    g = GridSpec(x_min=0, x_max=2, y_min=0, y_max=2, resolution=1.0)
+    m = points_to_grid_mask(np.zeros((0, 3)), g)
+    assert m.shape == (2, 2) and not m.any()
