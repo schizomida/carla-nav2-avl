@@ -36,3 +36,10 @@ perception_costmap:
     ipm_world_pts: [18.0, -8.0, 18.0, 8.0, 3.0, 4.0, 3.0, -4.0]
     cam_height: 1.6
     cam_pitch_deg: 10.0
+
+    # --- freshness ---
+    # drop stale sensor data instead of building a costmap from a frozen
+    # frame; requires use_sim_time so the node clock and CARLA stamps share
+    # the same timeline
+    image_stale_sec: 0.5
+    lidar_stale_sec: 0.5
