@@ -90,12 +90,15 @@ class TwinLiteSegmenter:
     def __call__(self, img_bgr):
         torch = self.torch
         h, w = img_bgr.shape[:2]
-        padded, _, (pl, pt) = letterbox(img_bgr, self.img_size)
+        padded, ratio, (pl, pt) = letterbox(img_bgr, self.img_size)
         with torch.no_grad():
             t = torch.from_numpy(padded).to(self.device).float()
             t = t.permute(2, 0, 1).unsqueeze(0) / 255.0
             da_out, _ = self.model(t)          # (drivable-area, lanes)
-        da = da_out[:, :, pt:self.img_size - pt, pl:self.img_size - pl]
+        # crop by content extent: letterbox padding can be asymmetric by 1px
+        new_h = int(round(h * ratio))
+        new_w = int(round(w * ratio))
+        da = da_out[:, :, pt:pt + new_h, pl:pl + new_w]
         da = torch.nn.functional.interpolate(da, size=(h, w), mode="bilinear")
         return (torch.argmax(da, dim=1).squeeze(0).cpu().numpy() == 1)
 
