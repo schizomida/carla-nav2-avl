@@ -48,11 +48,11 @@
 <div class="row hero">
   <div class="card">
     <div class="label">Fused BEV <span class="sub">3 cameras &rarr; one grid</span></div>
-    <img src="http://100.93.121.3:8080/stream?topic=/viz/fused_bev&type=mjpeg&quality=80" alt="fused BEV">
+    <img data-src="http://100.93.121.3:8080/stream?topic=/viz/fused_bev&type=mjpeg&quality=80" alt="fused BEV">
   </div>
   <div class="card">
     <div class="label">/perception/costmap <span class="sub">TwinLiteNet + YOLOv8 TRT</span></div>
-    <img src="http://100.93.121.3:8080/stream?topic=/viz/costmap_render&type=mjpeg&quality=80" alt="costmap">
+    <img data-src="http://100.93.121.3:8080/stream?topic=/viz/costmap_render&type=mjpeg&quality=80" alt="costmap">
   </div>
 </div>
 <div class="legend">
@@ -65,16 +65,33 @@
 <div class="row cams">
   <div class="card">
     <div class="label">Left <span class="sub">+90&deg;</span></div>
-    <img src="http://100.93.121.3:8080/stream?topic=/zed_left/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="left">
+    <img data-src="http://100.93.121.3:8080/stream?topic=/zed_left/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="left">
   </div>
   <div class="card">
     <div class="label">Front</div>
-    <img src="http://100.93.121.3:8080/stream?topic=/zed_front/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="front">
+    <img data-src="http://100.93.121.3:8080/stream?topic=/zed_front/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="front">
   </div>
   <div class="card">
     <div class="label">Right <span class="sub">&minus;90&deg;</span></div>
-    <img src="http://100.93.121.3:8080/stream?topic=/zed_right/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="right">
+    <img data-src="http://100.93.121.3:8080/stream?topic=/zed_right/zed_node/rgb/color/rect/image&type=mjpeg&quality=60&width=480&height=300" alt="right">
   </div>
 </div>
+
+<script>
+// MJPEG <img> streams die silently when web_video_server restarts or a
+// phone backgrounds the tab -- re-arm them with a cache-buster.
+function bump(img) {
+  var u = new URL(img.dataset.src, location.href);
+  u.searchParams.set('t', Date.now());
+  img.src = u.href;
+}
+document.querySelectorAll('img[data-src]').forEach(function (img) {
+  img.addEventListener('error', function () { setTimeout(function () { bump(img); }, 3000); });
+  bump(img);
+});
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) document.querySelectorAll('img[data-src]').forEach(bump);
+});
+</script>
 </body>
 </html>

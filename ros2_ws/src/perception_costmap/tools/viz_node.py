@@ -34,6 +34,8 @@ Render rules (2026-07-02, per operator feedback):
     fills the frame at true aspect; range rings + car footprint for the
     top-down read
 """
+import time
+
 import numpy as np
 import cv2
 import rclpy
@@ -49,11 +51,13 @@ from perception_costmap.occupancy import GridSpec
 GRID = GridSpec(x_min=-4.0, x_max=16.0, y_min=-10.0, y_max=10.0, resolution=0.1)
 RANGE_M = 12.0          # max trustworthy IPM distance from each camera
 REAR_DEG = 135.0        # |bearing from ego| beyond this = rear blind sector
+STALE_SEC = 1.5         # drop a camera wedge / flag the costmap after this
 X_DISP_MAX = 13.0       # crop display here: content ends at RANGE_M anyway
 PX_PER_M = 24           # display scale -> 480px wide for the 20 m y-span
 
-# car footprint from avros.urdf.xacro (main_length x main_width, base_link
-# at the chassis center)
+# car footprint from avros.urdf.xacro properties (verified on the car
+# 2026-07-02: main_length=0.7430, main_width=0.6795; the width matching the
+# front camera's cam_x=0.6795 is a coincidence)
 CAR_LEN, CAR_WID = 0.743, 0.6795
 
 CAMS = {
@@ -85,9 +89,11 @@ class VizNode(Node):
         super().__init__('perception_viz')
         self.bridge = CvBridge()
         self.imgs = {}
+        self.img_t = {}      # per-camera receive time (monotonic)
         self.H = {}
         self.weight = {}     # feathered blend weight per camera (float32)
         self.grid_msg = None
+        self.grid_t = 0.0
 
         self.X, self.Y, self.gh, self.gw = grid_world_coords()
         bearing = np.degrees(np.arctan2(self.Y, self.X))
@@ -119,6 +125,7 @@ class VizNode(Node):
     def _img_cb(self, name):
         def cb(msg):
             self.imgs[name] = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+            self.img_t[name] = time.monotonic()
         return cb
 
     def _info_cb(self, name):
@@ -139,6 +146,7 @@ class VizNode(Node):
 
     def _cost_cb(self, msg):
         self.grid_msg = msg
+        self.grid_t = time.monotonic()
 
     # raw (row=y, col=x) -> top-down display: forward up, car-left = image
     # left. transpose then flip BOTH axes (single-axis flip mirrors it).
@@ -150,12 +158,17 @@ class VizNode(Node):
     def _tick(self):
         gh, gw = self.gh, self.gw
 
+        now = time.monotonic()
         if self.H:
             acc = np.zeros((gh, gw, 3), np.float32)
             wsum = np.zeros((gh, gw), np.float32)
+            stale = []
             for name in CAMS:
                 if name not in self.H or name not in self.imgs:
                     continue
+                if now - self.img_t.get(name, 0.0) > STALE_SEC:
+                    stale.append(name)       # dead feed: dark wedge, not a
+                    continue                 # frozen last frame
                 bev_rgb = warp_to_bev(self.imgs[name], self.H[name], GRID,
                                       interp=cv2.INTER_LINEAR)
                 w = self.weight[name]
@@ -168,6 +181,10 @@ class VizNode(Node):
             fused[self.rear_mask] = (10, 10, 14)
             img = self._to_display(fused, cv2.INTER_LINEAR)
             self._draw_overlay(img)
+            for k, name in enumerate(stale):
+                cv2.putText(img, '%s STALE' % name.upper(), (8, 18 + 16 * k),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.45, (60, 60, 230), 1,
+                            cv2.LINE_AA)
             self.bev_pub.publish(self.bridge.cv2_to_imgmsg(img, 'bgr8'))
 
         if self.grid_msg is not None:
@@ -177,10 +194,20 @@ class VizNode(Node):
             vis[g == 0]   = (190, 190, 190)
             vis[g == 100] = (60, 60, 230)
             vis[g == -1]  = (45, 45, 45)
+            mid = (g > 0) & (g < 100)        # inflation/gradient costs
+            if mid.any():
+                inten = (180 - g[mid]).astype(np.uint8)
+                vis[mid] = np.stack((inten, inten, inten), axis=-1)
             if vis.shape[:2] == (gh, gw):
                 vis[self.rear_mask] = (10, 10, 14)
             img = self._to_display(vis, cv2.INTER_NEAREST)   # keep cells crisp
             self._draw_overlay(img)
+            age = now - self.grid_t
+            if age > STALE_SEC:
+                img //= 2
+                cv2.putText(img, 'COSTMAP STALE %.0fs' % age, (8, 18),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (60, 60, 230), 1,
+                            cv2.LINE_AA)
             self.cost_pub.publish(self.bridge.cv2_to_imgmsg(img, 'bgr8'))
 
     def _draw_overlay(self, img):
