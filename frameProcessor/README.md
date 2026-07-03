@@ -1,6 +1,6 @@
 # Autonomous Vehicle Perception Utilities
 
-Reusable computer vision utilities for autonomous vehicle perception.
+Reusable computer vision utilities for autonomous vehicle perception. Follow this README.md to set everything up such us downloading ufld2 and the required packages. 
 
 ## Project Layout
 
@@ -8,12 +8,17 @@ Reusable computer vision utilities for autonomous vehicle perception.
 project/
 ├── main.py
 ├── models/
+│   └── ufldv2/
+│       └── culane_res18.pth
 ├── external/
-├── util/
+│   └── Ultra-Fast-Lane-Detection-v2/
+│       ├── configs/
+│       └── model/
+├── preception_utils/
 └── outputs/
 ```
 
-### util/
+### perception_utils/
 
 | File | Purpose |
 |------|---------|
