@@ -25,6 +25,7 @@ from perception_utils import (
 # make the processing faster but with a cost in accuracy
 PROCESS_EVERY_N_FRAMES = 1
 RESIZE_WIDTH = 512
+VIDEO_SOURCE = "videos/roadVideo.mp4" #you could easily change this to some other input like some camera
 
 # --------------------------------------------------
 # Load models ONCE before the loop
@@ -131,9 +132,8 @@ def process_frame(frame):
 
 
 def main():
-    # cap = cv2.VideoCapture("videos/roadVideo.mp4") # from video file
-    # cap = cv2.VideoCapture("/dev/video42", cv2.CAP_V4L2) # from phone camera using scrcopy and usb debuggin
-    cap = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L2)  # from laptop camera
+
+    cap = cv2.VideoCapture("VIDEO_SOURCE", cv2.CAP_V4L2)  # from laptop camera
 
     if not cap.isOpened():
         raise RuntimeError("Could not open video")
