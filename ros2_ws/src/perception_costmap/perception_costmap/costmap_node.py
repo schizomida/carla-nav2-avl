@@ -195,7 +195,10 @@ class CostmapNode(Node):
                 continue
             saw_camera = True
             road = self.segmenter(cam.img)
-            road_bev |= bev.warp_to_bev(road.astype(np.uint8) * 255, cam.H, self.grid) > 127
+            # clip to the camera's footprint: warpPerspective also fills
+            # mirror cells behind the camera plane (negative projective depth)
+            road_bev |= (bev.warp_to_bev(
+                road.astype(np.uint8) * 255, cam.H, self.grid) > 127) & cam.known
             known |= cam.known
             if self.use_cam_obs:
                 obs_img = np.zeros(cam.img.shape[:2], bool)
@@ -203,8 +206,8 @@ class CostmapNode(Node):
                     obs_img |= obstacles.detect_obstacles_camera(cam.img, road)
                 if self.yolo is not None:
                     obs_img |= self.yolo.detect(cam.img)
-                obst_grid |= bev.warp_to_bev(
-                    obs_img.astype(np.uint8) * 255, cam.H, self.grid) > 127
+                obst_grid |= (bev.warp_to_bev(
+                    obs_img.astype(np.uint8) * 255, cam.H, self.grid) > 127) & cam.known
 
         lidar_fresh = (
             self._latest_points is not None

@@ -72,8 +72,14 @@ def build_cost_array(grid: GridSpec,
     Priority (low -> high): unknown < off-road < road < obstacle.
       - cells not in ``known_mask``      -> UNKNOWN (-1)
       - known cells                      -> ``offroad_cost`` (default lethal)
-      - road cells                       -> FREE (0)
+      - road cells (within known)        -> FREE (0)
       - obstacle cells                   -> LETHAL (100)
+
+    Road is clipped to ``known_mask``: a "road" pixel outside the observed
+    footprint (e.g. a mirror-projected sky pixel from a side camera) must
+    never mark unobserved ground drivable. Obstacles are NOT clipped --
+    the lidar legitimately sees beyond the camera FOVs, and a spurious
+    obstacle is the safe direction.
 
     All masks must be shape (grid.height, grid.width).
     """
@@ -87,7 +93,7 @@ def build_cost_array(grid: GridSpec,
 
     cost = np.full(shape, UNKNOWN, dtype=np.int8)
     cost[known_mask] = np.int8(offroad_cost)   # observed but not road -> off-road
-    cost[road_mask.astype(bool)] = FREE        # road overrides off-road
+    cost[road_mask.astype(bool) & known_mask] = FREE   # road overrides off-road
     cost[obstacle_mask.astype(bool)] = LETHAL  # obstacle overrides everything
     return cost
 

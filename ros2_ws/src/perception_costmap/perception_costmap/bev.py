@@ -50,7 +50,16 @@ def homography_from_points(image_pts, world_pts, grid: GridSpec) -> np.ndarray:
         grid_pts.append([v[0], v[1]])
     grid_pts = np.asarray(grid_pts, dtype=np.float32)
 
-    return cv2.getPerspectiveTransform(image_pts, grid_pts)
+    # findHomography (SVD), not getPerspectiveTransform: the latter pins
+    # h33 = 1 and silently returns a ZERO matrix when the true homography
+    # has h33 = 0 (horizon through pixel (0,0) -- the current default
+    # placeholder points hit exactly this, found 2026-07-03).
+    H, _ = cv2.findHomography(image_pts, grid_pts, method=0)
+    if H is None or abs(np.linalg.det(H)) < 1e-12:
+        raise ValueError("degenerate IPM point correspondence (collinear or "
+                         "crossed points?): %r -> %r" % (image_pts.tolist(),
+                                                         world_pts.tolist()))
+    return H
 
 
 def homography_from_extrinsics(K, cam_xyz, pitch_deg, yaw_deg, grid: GridSpec) -> np.ndarray:
@@ -103,13 +112,34 @@ def warp_to_bev(image, H, grid: GridSpec, interp=cv2.INTER_NEAREST):
 def bev_known_mask(H, image_shape, grid: GridSpec) -> np.ndarray:
     """
     The set of grid cells the camera actually sees (its ground footprint),
-    found by warping an all-ones image. Used as the ``known_mask`` so cells
-    outside the camera's view stay UNKNOWN instead of being marked off-road.
+    used as the ``known_mask`` so cells outside the camera's view stay
+    UNKNOWN instead of being marked off-road.
+
+    Computed analytically: a cell is known iff its source pixel lies inside
+    the image AND has positive projective depth. The previous
+    warp-an-all-ones-image approach admitted mirror cells BEHIND the camera
+    plane that project through the camera centre onto sky pixels (negative
+    w, which warpPerspective happily samples) -- a pitch-0 side camera
+    "observed" ground on the opposite side of the car (found 2026-07-03).
     """
     h, w = image_shape[:2]
-    ones = np.full((h, w), 255, dtype=np.uint8)
-    warped = warp_to_bev(ones, H, grid)
-    return warped > 0
+    try:
+        Hinv = np.linalg.inv(H)                    # grid -> image, homogeneous
+    except np.linalg.LinAlgError:
+        # degenerate H: the camera sees nothing rather than garbage
+        return np.zeros((grid.height, grid.width), dtype=bool)
+    jj, ii = np.meshgrid(np.arange(grid.width) + 0.5,
+                         np.arange(grid.height) + 0.5)
+    p = np.tensordot(Hinv, np.stack((jj, ii, np.ones_like(jj))), axes=1)
+    # fix the homography's global sign (arbitrary for points-mode H) with a
+    # pixel that must see real ground: the image's bottom-centre
+    g = H @ np.array([w / 2.0, h - 1.0, 1.0])
+    s = np.sign((Hinv @ (g / g[2]))[2]) or 1.0
+    wcell = p[2] * s
+    with np.errstate(divide="ignore", invalid="ignore"):
+        u = p[0] / p[2]
+        v = p[1] / p[2]
+    return (wcell > 1e-9) & (u >= 0) & (u < w) & (v >= 0) & (v < h)
 
 
 def draw_grid_on_image(img_bgr, H, grid: GridSpec, spacing_m=1.0):
