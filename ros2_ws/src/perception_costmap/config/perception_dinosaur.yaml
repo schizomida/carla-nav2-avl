@@ -1,0 +1,75 @@
+# Real-car config for "dinosaur" (Jetson AGX Orin, 3x ZED X + VLP-16).
+# Camera mounts from avros.urdf.xacro (IGVC repo); model paths are the
+# on-car locations. Launch:
+#   ros2 launch perception_costmap perception.launch.py config:=<this file>
+# See DEPLOY.md §6 for the full bring-up story.
+
+perception_costmap:
+  ros__parameters:
+    lidar_topic: /velodyne_points
+    costmap_topic: /perception/costmap
+    obstacle_points_topic: /perception/obstacle_points
+
+    publish_rate: 10.0
+    frame_id: base_link
+
+    x_min: -4.0
+    x_max: 16.0
+    y_min: -10.0
+    y_max: 10.0
+    resolution: 0.1
+
+    segmentation_method: twinlitenet
+    use_camera_obstacles: true
+    use_lidar: true
+    obstacle_method: yolo
+    yolo_weights: /home/dinosaur/models/yolov8n.engine
+    yolo_conf: 0.35
+    yolo_footprint_frac: 0.25
+    twinlite_repo_path: /home/dinosaur/models/TwinLiteNetPlus
+    twinlite_weights: /home/dinosaur/models/TwinLiteNetPlus/pretrained/nano.pth
+    twinlite_config: nano
+    # velodyne is 0.715 m above ground (URDF: xsens_height+0.159); points are
+    # in the sensor frame, so ground is at z ≈ -0.715
+    lidar_z_min: -0.5             # 0.2 m above ground
+    lidar_z_max: 1.8              # ~2.5 m above ground
+
+    # --- cameras: mounts from avros.urdf.xacro (verified 2026-04-24) ---
+    # ipm_mode camera: homography derived from CameraInfo K + mounting,
+    # so no per-camera point calibration needed.
+    cameras: ["front", "left", "right"]
+    front:
+      image_topic: /zed_front/zed_node/rgb/color/rect/image
+      camera_info_topic: /zed_front/zed_node/rgb/color/rect/camera_info
+      ipm_mode: camera
+      cam_x: 0.6795
+      cam_y: 0.0
+      cam_height: 0.4476          # xsens_height 0.5556 - 0.108
+      cam_pitch_deg: 15.0
+      cam_yaw_deg: 0.0
+    left:
+      image_topic: /zed_left/zed_node/rgb/color/rect/image
+      camera_info_topic: /zed_left/zed_node/rgb/color/rect/camera_info
+      ipm_mode: camera
+      cam_x: 0.098
+      cam_y: 0.286
+      cam_height: 0.6126          # xsens_height + 0.057
+      cam_pitch_deg: 0.0          # URDF: rpy="0 0 1.5708" (no tilt)
+      cam_yaw_deg: 90.0
+    right:
+      image_topic: /zed_right/zed_node/rgb/color/rect/image
+      camera_info_topic: /zed_right/zed_node/rgb/color/rect/camera_info
+      ipm_mode: camera
+      cam_x: 0.098
+      cam_y: -0.286
+      cam_height: 0.6126
+      cam_pitch_deg: 0.0          # URDF: rpy="0 0 -1.5708" (no tilt)
+      cam_yaw_deg: -90.0
+
+    image_stale_sec: 0.5
+    lidar_stale_sec: 0.5
+
+    temporal_hit: 0.4
+    temporal_miss: 0.2
+    temporal_threshold: 0.5
+    temporal_enabled: true
