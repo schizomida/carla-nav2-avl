@@ -50,3 +50,47 @@ and lidar drivers publishing the same topics.
 - RViz: road free, person standing in front = lethal within 300 ms, clears
   within 500 ms after they step away (temporal filter working)
 - Nav2 local costmap (config/nav2_costmap_params.yaml) mirrors it.
+
+## 6. As-deployed on dinosaur (2026-07-02) — what actually happened
+
+The unit is an AGX Orin 64 GB (not a Nano), JetPack 6.1 / L4T R36.4.7,
+CUDA 12.6, TensorRT 10.3. Real config: `config/perception_dinosaur.yaml`
+(3x ZED X + velodyne). Ops scripts + live dashboard: `deploy/`.
+
+**Torch (the §1 warning is real, with extra teeth):**
+- Index is `https://pypi.jetson-ai-lab.io/jp6/cu126` — the old `.dev` domain
+  is dead, and when it silently fails pip falls back to PyPI and installs a
+  broken cu13 aarch64 wheel (`torch.cuda.is_available() == False`).
+- `torch==2.8.0` + `torchvision==0.23.0`. Newer (2.11) needs `libcudss`,
+  which JetPack 6.1 doesn't ship.
+- Pin `numpy<2` afterwards — the wheel drags in numpy 2.x, which breaks the
+  Humble cv_bridge / ultralytics import chain.
+
+**Models, measured (30-frame bench, 30 W mode + jetson_clocks):**
+
+    yolov8n TensorRT FP16     25.7 ms   (meets the <=25 ms target)
+    TwinLiteNet+ nano, CUDA   73.7 ms   <- dominates
+    3-camera node             ~5 Hz     (below the 8 Hz acceptance)
+
+To close the gap: TensorRT-export TwinLiteNet (same treatment as YOLO), and
+MAXN power mode (`nvpmodel -m 0` — requires a reboot on this board).
+TwinLiteNet weights: gdown the Drive folder in the TwinLiteNetPlus README
+(nano.pth = 217 KB).
+
+**ZED X reality (§4 "vendor driver" hides all of this):**
+- Wrappers block on TF ("Waiting for valid static transformations...") until
+  robot_state_publisher is up — launch `avros_bringup sensors.launch.py`
+  first. That also provides `/velodyne_points`: points arrive in the SENSOR
+  frame, so the z band in the YAML is offset by the 0.715 m mount height
+  (-0.5..1.8, not 0.2..2.5).
+- Start the three cameras sequentially, ~40 s apart. Parallel starts and
+  daemon restarts under live wrappers wedge the GMSL streams
+  ("CAMERA STREAM FAILED TO START", Argus timeouts). Recovery that works:
+  `deploy/clean_camera_restart.sh` (daemon restart + sequential bring-up).
+- Topic names are `/zed_<name>/zed_node/rgb/color/rect/image` (+
+  `.../camera_info`) on the current wrapper — not the older
+  `rgb/image_rect_color` the docs float around.
+
+**Still open:** per-camera IPM calibration (§4 tape-measure procedure — the
+current homographies are URDF-derived), TwinLiteNet TRT export, boot-time
+autostart of the stack (only the joystick webui survives a power cycle).
