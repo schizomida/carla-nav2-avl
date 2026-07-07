@@ -62,7 +62,7 @@ sleep 15
 
 echo "[6/6] viz node + streaming servers..."
 tmux -L percept new-window -t percept -n viz \
-  "bash -c \"source /opt/ros/humble/setup.bash && source /home/dinosaur/carla-nav2-avl/ros2_ws/install/setup.bash && $E && cd /home/dinosaur/carla-nav2-avl/ros2_ws/src/perception_costmap && PYTHONPATH=.:\$PYTHONPATH python3 tools/viz_node.py 2>&1 | tee /tmp/viz_node.log; exec bash\""
+  "bash /home/dinosaur/carla-nav2-avl/ros2_ws/src/perception_costmap/deploy/run_viz.sh 2>&1 | tee /tmp/viz_node.log"
 tmux -L percept new-window -t percept -n wvs \
   "bash -c \"source /opt/ros/humble/setup.bash && $E && ros2 run web_video_server web_video_server --ros-args -p port:=8080 -p address:=0.0.0.0 2>&1 | tee /tmp/wvs.log; exec bash\""
 tmux -L percept new-window -t percept -n www \
