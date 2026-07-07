@@ -174,9 +174,14 @@ class CostmapNode(Node):
     # ---- callbacks ----
     def _on_lidar(self, msg):
         from sensor_msgs_py import point_cloud2
-        pts = point_cloud2.read_points_numpy(
+        # read_points (structured), not read_points_numpy: the latter
+        # asserts all cloud fields share one dtype and dies on real velodyne
+        # clouds (float32 xyz/intensity + uint16 ring) -- found 2026-07-07,
+        # first time live velodyne data reached this callback
+        arr = point_cloud2.read_points(
             msg, field_names=("x", "y", "z"), skip_nans=True)
-        self._latest_points = np.asarray(pts, float).reshape(-1, 3)
+        self._latest_points = np.stack(
+            [np.asarray(arr[k], float) for k in ("x", "y", "z")], axis=-1)
         self._pts_stamp = stamp_to_sec(msg.header.stamp)
 
     # ---- main loop ----
