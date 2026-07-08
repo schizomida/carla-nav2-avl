@@ -29,6 +29,7 @@ perception_costmap:
     # lines subtracted from drivable. cone weights: driving_seg's committed
     # detector; export to .engine ON the Jetson (yolo export format=engine)
     use_cones: true
+    yolo_cameras: ["front"]
     cone_weights: /home/dinosaur/models/cone_det.engine
     cone_conf: 0.35
     use_white_lines: true

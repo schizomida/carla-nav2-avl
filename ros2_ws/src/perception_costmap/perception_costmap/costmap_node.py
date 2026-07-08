@@ -102,6 +102,9 @@ class CostmapNode(Node):
             # course classes (IGVC): dedicated cone detector + painted
             # white-line boundary. See FINALIZE.md Phase 1.
             ("use_cones", False),
+            # cameras the COCO detector runs on ([] = all). IGVC: front only
+            # (side coverage = cones + 360 lidar) buys ~25 ms/tick
+            ("yolo_cameras", [""]),
             ("cone_weights", "cone_det.pt"),
             ("cone_conf", 0.35),
             ("use_white_lines", False),
@@ -148,6 +151,7 @@ class CostmapNode(Node):
                 self.get_logger().warn(
                     "YOLO unavailable (%s); falling back to classical" % e)
 
+        self.yolo_cams = set(c for c in g["yolo_cameras"] if c)
         self.cones = None
         if g["use_cones"]:
             try:
@@ -230,7 +234,8 @@ class CostmapNode(Node):
                 obs_img = np.zeros(cam.img.shape[:2], bool)
                 if self.obstacle_method in ("classical", "both") or self.yolo is None:
                     obs_img |= obstacles.detect_obstacles_camera(cam.img, road)
-                if self.yolo is not None:
+                if self.yolo is not None and (
+                        not self.yolo_cams or cam.name in self.yolo_cams):
                     obs_img |= self.yolo.detect(cam.img)
                 if self.cones is not None:
                     obs_img |= self.cones.detect(cam.img)
