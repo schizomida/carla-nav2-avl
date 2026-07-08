@@ -7,6 +7,8 @@ x86-only and never runs on the Jetson — only the sensor source changes.
 
 > New here? Read `CLAUDE.md` next — it says exactly what is real, what is
 > stub, and the conventions that bind changes.
+> Finishing the project? **`FINALIZE.md`** is the ordered master plan
+> (phases, commands, acceptance criteria) to take this to competition-ready.
 
 ## What's on this branch (all real, tested)
 
