@@ -6,10 +6,12 @@ that directory.
 ## The problem
 
 The costmap needs cones (and painted white course lines) as *areas*, not
-boxes. No public pretrained model has a cone class with masks: COCO doesn't
-include cones, Open Images has no cone masks, FSOCO is gated, and Roboflow
-needs API keys. So we train our own — and the whole point of this doc is
-that **you can retrain it in ~30 minutes** whenever it isn't good enough.
+boxes. No public pretrained model has a cone class with MASKS (COCO: no
+cones; Open Images: no cone masks; FSOCO: gated; Roboflow: API keys) — but
+a good free pretrained cone DETECTOR does exist (see v3 below), so the
+current design detects with it and derives masks, while our own fine-tuned
+model covers white lines. Retraining ours takes ~30 minutes whenever it
+isn't good enough.
 
 ## The pipeline (three models, one overlay)
 
@@ -48,9 +50,15 @@ alone would miss.
 - v1 (93 scraped images): mask mAP50 ≈ 0.29 — solid on classic orange
   cones, misses striped/faded ones.
 - v2 (103 real + 299 copy-paste synthetic, faded-orange band): cone mask
-  AP50 0.295, white_line 0.431. Orange cones solid; striped/white-banded
-  cones still weak — the color-gate teacher can't label what it can't see,
-  which is exactly why the section below matters.
+  AP50 0.295, white_line 0.431. Orange cones solid; striped cones weak —
+  the color-gate teacher can't label what it can't see.
+- **v3 (current): hybrid.** A dedicated pretrained cone DETECTOR
+  (ExStella/Traffic-cones, Hugging Face, Apache-2.0 — models/cone_det.pt,
+  committed) finds every cone incl. striped/white-banded ones; each box is
+  converted to an area mask (color gate + convex hull inside the box, box
+  fallback). Our fine-tuned model keeps white_line. Verified on the
+  striped-cone test image: full cluster highlighted. Pipeline still 65 FPS
+  on the 5090.
 - `white_line` is undertrained (public grass-line imagery is scarce) — the
   fix is the section below.
 

@@ -1,5 +1,6 @@
 /models/*
 !/models/course.pt
+!/models/cone_det.pt
 !/models/README.md
 /testdata/
 /datasets/
