@@ -2,7 +2,8 @@
 # Minimal test-media fetch: COCO val street scenes (CC-licensed) + Wikimedia
 # cones / grass-line images. Verifies each file decodes; logs sources.
 set -u
-cd "$(dirname "$0")/../testdata"
+mkdir -p "$(dirname "$0")/../testdata"
+cd "$(dirname "$0")/../testdata" || exit 1
 mkdir -p street cones grass_lines video
 S=SOURCES.txt
 : > $S
