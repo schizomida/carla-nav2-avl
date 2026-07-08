@@ -30,6 +30,11 @@ sleep 3
 tmux -L percept has-session -t percept
 sleep 15
 
+echo "[1b/6] EKF (odom->base_link; velodyne + Nav2 need the odom frame)..."
+tmux -L percept new-window -t percept -n ekf \
+  "bash -c \"source /home/dinosaur/IGVC/install/setup.bash && $E && ros2 run robot_localization ekf_node --ros-args -r __node:=ekf_filter_node_odom --params-file $CFG/ekf.yaml 2>&1 | tee /tmp/ekf.log; exec bash\""
+sleep 5
+
 zed_cmd() {
   local name=$1 serial=$2
   echo "source /home/dinosaur/IGVC/install/setup.bash && $E && \
