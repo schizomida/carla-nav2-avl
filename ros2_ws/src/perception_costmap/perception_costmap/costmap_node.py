@@ -99,6 +99,12 @@ class CostmapNode(Node):
             ("obstacle_method", "classical"),
             ("yolo_weights", "yolov8n.pt"),
             ("yolo_conf", 0.35),
+            # course classes (IGVC): dedicated cone detector + painted
+            # white-line boundary. See FINALIZE.md Phase 1.
+            ("use_cones", False),
+            ("cone_weights", "cone_det.pt"),
+            ("cone_conf", 0.35),
+            ("use_white_lines", False),
             ("yolo_footprint_frac", 0.25),
             ("twinlite_repo_path", ""),
             ("twinlite_weights", ""),
@@ -141,6 +147,18 @@ class CostmapNode(Node):
             except Exception as e:
                 self.get_logger().warn(
                     "YOLO unavailable (%s); falling back to classical" % e)
+
+        self.cones = None
+        if g["use_cones"]:
+            try:
+                self.cones = obstacles.ConeDetector(
+                    weights=g["cone_weights"], conf=g["cone_conf"])
+                self.get_logger().info(
+                    "cone detector loaded: %s" % g["cone_weights"])
+            except Exception as e:
+                self.get_logger().warn(
+                    "cones unavailable (%s); disabled" % e)
+        self.use_white_lines = bool(g["use_white_lines"])
 
         try:
             if g["segmentation_method"] == "twinlitenet":
@@ -200,6 +218,9 @@ class CostmapNode(Node):
                 continue
             saw_camera = True
             road = self.segmenter(cam.img)
+            if self.use_white_lines:
+                # painted course lines are boundaries, not drivable
+                road = road & ~segmentation.white_line_mask(cam.img)
             # clip to the camera's footprint: warpPerspective also fills
             # mirror cells behind the camera plane (negative projective depth)
             road_bev |= (bev.warp_to_bev(
@@ -211,6 +232,8 @@ class CostmapNode(Node):
                     obs_img |= obstacles.detect_obstacles_camera(cam.img, road)
                 if self.yolo is not None:
                     obs_img |= self.yolo.detect(cam.img)
+                if self.cones is not None:
+                    obs_img |= self.cones.detect(cam.img)
                 obst_grid |= (bev.warp_to_bev(
                     obs_img.astype(np.uint8) * 255, cam.H, self.grid) > 127) & cam.known
 

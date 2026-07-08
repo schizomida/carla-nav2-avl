@@ -98,6 +98,57 @@ class YoloObstacleDetector:
         return boxes_to_footprint_mask(boxes, img_bgr.shape, self.footprint_frac)
 
 
+def cone_box_to_mask(img_bgr, box):
+    """Area mask for one detected cone: orange + white-band gate inside the
+    box, convex-hulled; falls back to the box's lower 85% when the gate
+    finds nothing (dark / odd-colored cone). Boxes are never used directly.
+    """
+    h, w = img_bgr.shape[:2]
+    x1, y1, x2, y2 = (int(v) for v in box[:4])
+    x1, y1, x2, y2 = max(0, x1), max(0, y1), min(w, x2), min(h, y2)
+    if x2 - x1 < 3 or y2 - y1 < 3:
+        return None
+    hsv = cv2.cvtColor(img_bgr[y1:y2, x1:x2], cv2.COLOR_BGR2HSV)
+    m = cv2.inRange(hsv, (2, 90, 70), (22, 255, 255))       # orange body
+    m |= cv2.inRange(hsv, (0, 0, 150), (180, 60, 255))      # white bands
+    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
+    out = np.zeros((h, w), bool)
+    if m.mean() > 0.10 * 255:
+        cnts, _ = cv2.findContours(m, cv2.RETR_EXTERNAL,
+                                   cv2.CHAIN_APPROX_SIMPLE)
+        hull = cv2.convexHull(np.vstack([c.reshape(-1, 2) for c in cnts]))
+        mm = np.zeros(m.shape, np.uint8)
+        cv2.fillPoly(mm, [hull], 255)
+        out[y1:y2, x1:x2] = mm > 0
+    else:
+        out[y1 + int(0.15 * (y2 - y1)):y2, x1:x2] = True
+    return out
+
+
+class ConeDetector:
+    """Dedicated cone detector (driving_seg/models/cone_det.pt --
+    ExStella/Traffic-cones, Apache-2.0; .engine on the Jetson). Detections
+    become AREA masks via cone_box_to_mask; catches striped/white-banded
+    cones that color gates and COCO models miss. Loads once, like
+    YoloObstacleDetector."""
+
+    def __init__(self, weights="cone_det.pt", conf=0.35, device=None):
+        from ultralytics import YOLO          # lazy: optional dependency
+        self.model = YOLO(weights)
+        self.conf = conf
+        self.device = device
+
+    def detect(self, img_bgr):
+        res = self.model(img_bgr, verbose=False, conf=self.conf,
+                         device=self.device)[0]
+        mask = np.zeros(img_bgr.shape[:2], bool)
+        for b in res.boxes:
+            m = cone_box_to_mask(img_bgr, b.xyxy[0].tolist())
+            if m is not None:
+                mask |= m
+        return mask
+
+
 def detect_obstacles_yolo(img_bgr, classes=YoloObstacleDetector.DEFAULT_CLASSES):
     """One-shot convenience kept for scripts. For anything per-frame use
     YoloObstacleDetector so the model loads once."""

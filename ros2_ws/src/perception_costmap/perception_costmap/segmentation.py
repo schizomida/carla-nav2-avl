@@ -120,3 +120,34 @@ def segment_road(img_bgr, method: str = "hsv", **kw) -> np.ndarray:
     a cloned TwinLiteNetPlus repo + weights -- see create_segmenter).
     """
     return create_segmenter(method, **kw)(img_bgr)
+
+
+def white_line_mask(img_bgr, min_grass_frac=0.10, min_elong=3.0):
+    """Painted white course lines (IGVC: chalk/paint on grass) as a boolean
+    mask -- used as a NEGATIVE on the road mask so lines become off-road
+    boundaries in the costmap. Classical and cheap (~2 ms): white gate
+    restricted to grass-adjacent pixels, elongated components only.
+    Returns all-False when the scene has too little grass (indoors, roads).
+    """
+    h, w = img_bgr.shape[:2]
+    hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+    grass = cv2.inRange(hsv, (30, 40, 40), (90, 255, 255))
+    if grass.mean() < min_grass_frac * 255:
+        return np.zeros((h, w), bool)
+    white = cv2.inRange(hsv, (0, 0, 165), (180, 70, 255))
+    white &= cv2.dilate(grass, np.ones((25, 25), np.uint8))
+    white = cv2.morphologyEx(white, cv2.MORPH_CLOSE,
+                             np.ones((5, 5), np.uint8))
+    out = np.zeros((h, w), bool)
+    cnts, _ = cv2.findContours(white, cv2.RETR_EXTERNAL,
+                               cv2.CHAIN_APPROX_SIMPLE)
+    for c in cnts:
+        if cv2.contourArea(c) < 0.0006 * h * w:
+            continue
+        (rw, rh) = cv2.minAreaRect(c)[1]
+        if min(rw, rh) == 0 or max(rw, rh) / max(min(rw, rh), 1.0) < min_elong:
+            continue
+        m = np.zeros((h, w), np.uint8)
+        cv2.fillPoly(m, [c.reshape(-1, 2)], 255)
+        out |= m > 0
+    return out

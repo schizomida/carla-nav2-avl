@@ -25,6 +25,13 @@ perception_costmap:
     obstacle_method: yolo
     yolo_weights: /home/dinosaur/models/yolov8n.engine
     yolo_conf: 0.35
+    # course classes (FINALIZE.md Phase 1): cones lethal, painted white
+    # lines subtracted from drivable. cone weights: driving_seg's committed
+    # detector; export to .engine ON the Jetson (yolo export format=engine)
+    use_cones: true
+    cone_weights: /home/dinosaur/models/cone_det.engine
+    cone_conf: 0.35
+    use_white_lines: true
     yolo_footprint_frac: 0.25
     twinlite_repo_path: /home/dinosaur/models/TwinLiteNetPlus
     twinlite_weights: /home/dinosaur/models/TwinLiteNetPlus/pretrained/nano.pth

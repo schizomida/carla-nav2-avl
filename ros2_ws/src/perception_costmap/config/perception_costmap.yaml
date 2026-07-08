@@ -28,6 +28,12 @@ perception_costmap:
     obstacle_method: classical
     yolo_weights: yolov8n.pt      # .pt or .engine (TensorRT, Jetson)
     yolo_conf: 0.35
+    # course classes (off by default; the real car enables them -- see
+    # config/perception_dinosaur.yaml and FINALIZE.md Phase 1)
+    use_cones: false
+    cone_weights: cone_det.pt
+    cone_conf: 0.35
+    use_white_lines: false
     yolo_footprint_frac: 0.25
     # twinlitenet: only used when segmentation_method is twinlitenet; needs a
     # cloned TwinLiteNetPlus repo + downloaded weights (see
