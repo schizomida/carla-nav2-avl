@@ -8,3 +8,6 @@
 *.engine
 __pycache__/
 runs/
+/yolo11n*.pt
+*.pt
+!/models/course.pt
