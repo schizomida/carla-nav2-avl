@@ -1,8 +1,9 @@
-models/*
-!models/course.pt
-!models/README.md
-testdata/
-*.pt
+/models/*
+!/models/course.pt
+!/models/README.md
+/testdata/
+/datasets/
+/out/
 *.onnx
 *.engine
 __pycache__/
