@@ -1,4 +1,8 @@
-# Deploying to the car computer (Jetson Orin Nano, "dinosaur")
+# Deploying to the car computer (Jetson AGX Orin 64 GB, "dinosaur")
+
+> §§0–5 were written pre-deploy assuming an Orin Nano 8 GB; the real unit
+> is an AGX Orin 64 GB (no swap needed, MAXN exists but needs a reboot).
+> §6 records what actually happened on the hardware.
 
 The Jetson runs the identical perception stack against real sensors. CARLA
 never runs here (x86 only) — `tools/carla_feed.py` is replaced by real camera
@@ -92,5 +96,6 @@ TwinLiteNet weights: gdown the Drive folder in the TwinLiteNetPlus README
   `rgb/image_rect_color` the docs float around.
 
 **Still open:** per-camera IPM calibration (§4 tape-measure procedure — the
-current homographies are URDF-derived), TwinLiteNet TRT export, boot-time
-autostart of the stack (only the joystick webui survives a power cycle).
+current homographies are URDF-derived) and TwinLiteNet TRT export.
+Boot-time autostart shipped 2026-07-07: `deploy/percept-stack.service`
+(installed + enabled on the car).

@@ -7,7 +7,7 @@ what is stub, and where to start.
 
 Sim-to-real autonomous vehicle pipeline: validate perception + Nav2 in CARLA
 with the same 3-camera layout as the real car, then deploy the identical ROS2
-stack to the car's onboard computer (an NVIDIA Jetson Orin Nano, JetPack 6.1 /
+stack to the car's onboard computer (an NVIDIA Jetson AGX Orin 64 GB, JetPack 6.1 /
 Ubuntu 22.04 / native ROS2 Humble). CARLA is x86-only and never runs on the
 Jetson — only the sensor source changes between sim and car.
 
@@ -20,7 +20,7 @@ the **`feature/alexander`** branch:
   Nav2-compatible costmap. Multi-camera BEV fusion, HSV or TwinLiteNet+ road
   segmentation, classical or YOLOv8 obstacles (footprint-strip projection,
   .pt or TensorRT .engine), temporal confidence filter, sensor-data QoS,
-  staleness guards. 33 offline tests.
+  staleness guards. 39 offline tests.
 - `ros2_ws/src/perception_costmap/README.md` — build/run/Nav2 wiring.
 - `ros2_ws/src/perception_costmap/DESIGN.md` — architecture + dataflow.
 - `ros2_ws/src/perception_costmap/DEPLOY.md` — Jetson bring-up checklist.
@@ -30,6 +30,10 @@ the **`feature/alexander`** branch:
   export_trt (run ON the Jetson), bench_perception (per-stage timing).
 - `docs/plans/2026-07-01-perception-v2-sim-to-real.md` — the implementation
   plan this was built from (all 10 tasks complete).
+- `driving_seg/` (repo root) — multi-model area-highlighting segmentation
+  (people/vehicles/signs/road/lanes/cones/white lines, no bounding boxes);
+  standalone package with its own README/PROMPT.md, trained cone model
+  committed. Real, tested work (2026-07-07).
 - `perception/` (repo root) — Adam Castillo's original prototype scripts the
   package was factored from. Keep author credits intact.
 
@@ -40,13 +44,14 @@ the **`feature/alexander`** branch:
 - `ros2_ws/src/sdc_bringup/launch/sdc.launch.py` — broken (foreign hardcoded
   path, references nodes that don't exist). Use
   `perception_costmap/launch/perception.launch.py` instead.
-- The root README's stack description (CARLA 0.10 / controller / planner) is
-  partly aspirational — trust the perception_costmap docs over it.
+- CONTRIBUTION_GUIDE.md's stack description (CARLA 0.10 / controller /
+  planner) is partly aspirational — trust the perception_costmap docs.
+  The root README was rewritten truthful (2026-07-07).
 
 ## How to verify a checkout (no ROS needed)
 
     cd ros2_ws/src/perception_costmap
-    PYTHONPATH=.:$PYTHONPATH python3 -m pytest test -q     # 33 passed
+    PYTHONPATH=.:$PYTHONPATH python3 -m pytest test -q     # 39 passed
     python3 tools/bench_perception.py --frames 20          # stage table
 
 With ROS2 (Humble target; Jazzy works for build/import):

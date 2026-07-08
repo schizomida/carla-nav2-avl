@@ -47,8 +47,10 @@ alone would miss.
 
 - v1 (93 scraped images): mask mAP50 ≈ 0.29 — solid on classic orange
   cones, misses striped/faded ones.
-- v2 (competition scrape + copy-paste augmentation + faded-orange band):
-  see `PLAN.md` for the latest numbers.
+- v2 (103 real + 299 copy-paste synthetic, faded-orange band): cone mask
+  AP50 0.295, white_line 0.431. Orange cones solid; striped/white-banded
+  cones still weak — the color-gate teacher can't label what it can't see,
+  which is exactly why the section below matters.
 - `white_line` is undertrained (public grass-line imagery is scarce) — the
   fix is the section below.
 

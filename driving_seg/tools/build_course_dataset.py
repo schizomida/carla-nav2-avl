@@ -32,7 +32,11 @@ ROOT = os.path.join(os.path.dirname(__file__), "..", "datasets", "course")
 
 CONE_TERMS = ["traffic cone", "traffic cones road", "orange safety cone",
               "traffic cones construction", "pylon traffic",
-              "slalom cones driving", "traffic cone street"]
+              "slalom cones driving", "traffic cone street",
+              "autocross cones", "gymkhana cones", "motorkhana",
+              "driving test cones car", "cone slalom competition",
+              "Formula Student cones track", "robot competition cones",
+              "parking course cones", "koenen slalom"]
 LINE_TERMS = ["football pitch line grass", "soccer field white line",
               "sports field markings grass", "touchline grass",
               "baseball foul line grass", "rugby pitch lines"]
@@ -95,8 +99,10 @@ def fetch(url, dest):
 
 def label_cones(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    # orange: two hue bands to survive lighting shifts
-    m = cv2.inRange(hsv, (2, 120, 90), (18, 255, 255))
+    # orange gate + pale band for sun-faded cones
+    m = cv2.inRange(hsv, (2, 110, 80), (18, 255, 255))
+    # faded / sun-bleached cones: low-sat pale orange band
+    m |= cv2.inRange(hsv, (4, 55, 140), (22, 130, 255))
     m = cv2.morphologyEx(m, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
     m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((7, 7), np.uint8))
     h, w = img.shape[:2]
@@ -199,7 +205,7 @@ def main():
         urls = resolve_urls(titles)
         print(tag, "resolved", len(urls), "of", len(titles))
         for title in titles:
-            if True:
+            if True:   # keeps diff-history indentation; no-op
                 if title not in urls:
                     counts["fetch_fail"] += 1
                     continue

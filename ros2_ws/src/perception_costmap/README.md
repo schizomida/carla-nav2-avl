@@ -61,7 +61,7 @@ Two options in `config/perception_costmap.yaml`:
 
 ```bash
 cd ros2_ws/src/perception_costmap
-PYTHONPATH=.:$PYTHONPATH python3 -m pytest test -q     # 33 offline tests
+PYTHONPATH=.:$PYTHONPATH python3 -m pytest test -q     # 39 offline tests
 ```
 
 ## CARLA smoke test (on the x86 / 5090 box)
@@ -89,7 +89,7 @@ PYTHONPATH=.:$PYTHONPATH python3 -m pytest test -q     # 33 offline tests
 
 ## Status
 
-**Done and verified offline + under ROS2 (this laptop, 33 tests green):**
+**Done and verified offline + under ROS2 (this laptop, 39 tests green):**
 - Sensor-data (`BEST_EFFORT`) QoS on every subscription, with `image_stale_sec`
   / `lidar_stale_sec` guards that drop frames instead of building a costmap
   from stale data.

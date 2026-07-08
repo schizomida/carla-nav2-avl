@@ -8,7 +8,7 @@ constraints) and PLAN.md for status.
 ## Quick start
 
     pip install ultralytics
-    python3 tools/fetch_testdata.sh            # sample media (optional)
+    bash tools/fetch_testdata.sh            # sample media (optional)
     python3 -m driving_seg.demo --source testdata/street --out out/
 
 Weights land in `models/`: `yolo11n-seg.pt` (auto-downloaded by

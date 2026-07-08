@@ -1,15 +1,15 @@
-# Execution plan (status-tracked)
+# Execution plan (status)
 
 1. [x] Folder + git + PROMPT.md + design spec
-2. [ ] Core package: config, fusion, model wrappers (lazy), pipeline, demo
-       — offline tests green with no weights installed
-3. [ ] Weights: yolo11n-seg (or research agent's pick) + YOLOPv2; demo runs
-       on testdata/ street scenes (road green, cars blue, people red)
-4. [ ] Course model: dataset (research agent's ranked pick) -> fine-tune on
-       5090 -> cones orange + white lines white on test photos
-5. [ ] Bench table (5090) + tools/export_trt.py for Jetson FP16 engines
-6. [ ] Results report: sample overlays + timings sent to user; commit log
-       clean; deploy-to-dinosaur checklist (blocked: car offline)
+2. [x] Core package (config/fusion/wrappers/pipeline/demo) — 7 offline tests
+3. [x] Weights + demo verified on street scenes
+4. [x] Course model: v1 (93 scraped imgs) -> v2 (103 real + 299 copy-paste
+       synthetic). Val mask AP50: cone 0.295, white_line 0.431 (v1: 0.293 /
+       0.006). Solid on orange cones; striped/white-banded cones still weak —
+       fix is photographing OUR cones (docs/CONE_DETECTION.md).
+5. [x] Bench (RTX 5090, 40 frames, parallel stages): scene 9.0 ms, road
+       7.6 ms, course 7.5 ms median -> total 13.6 ms ≈ 74 FPS.
+       TRT export: tools/export_trt.py (run on the Jetson).
+6. [x] Committed to carla-nav2-avl feature/alexander under driving_seg/.
 
-Agents: research (models/datasets) + test-media acquisition run in
-parallel with step 2.
+Open: white_line real-world data, striped-cone recall, Jetson TRT bench.

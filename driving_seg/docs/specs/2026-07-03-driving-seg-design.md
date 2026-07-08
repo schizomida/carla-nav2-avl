@@ -29,7 +29,6 @@ driving_seg/
   pipeline.py    # runs models (thread-parallel), merges dicts, times stages
   demo.py        # CLI: image/dir/video/cam -> overlay media + timings
 tools/
-  fetch_weights.py   # download pretrained checkpoints
   train_course.py    # fine-tune course model from datasets/
   export_trt.py      # FP16 engines (run on target hardware)
 test/                # offline: fusion, config, wrapper contracts (mocked)
