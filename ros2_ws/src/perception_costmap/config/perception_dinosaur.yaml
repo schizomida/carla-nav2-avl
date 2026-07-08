@@ -34,7 +34,7 @@ perception_costmap:
     use_white_lines: true
     yolo_footprint_frac: 0.25
     twinlite_repo_path: /home/dinosaur/models/TwinLiteNetPlus
-    twinlite_weights: /home/dinosaur/models/TwinLiteNetPlus/pretrained/nano.pth
+    twinlite_weights: /home/dinosaur/models/twinlite_nano.engine  # TRT FP16 (nano.pth = pytorch fallback)
     twinlite_config: nano
     # velodyne is 0.715 m above ground (URDF: xsens_height+0.159); points are
     # in the sensor frame, so ground is at z ≈ -0.715

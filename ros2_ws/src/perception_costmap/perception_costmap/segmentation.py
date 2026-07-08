@@ -103,12 +103,63 @@ class TwinLiteSegmenter:
         return (torch.argmax(da, dim=1).squeeze(0).cpu().numpy() == 1)
 
 
+class TwinLiteTRTSegmenter:
+    """TwinLiteNet drivable-area head from a TensorRT engine (build:
+    trtexec --onnx=twinlite_nano.onnx --fp16 --saveEngine=...). Fixed
+    384x640 input with aspect-preserving letterbox; I/O buffers are torch
+    CUDA tensors so there is no pycuda dependency. ~10x the pytorch path
+    on the Jetson."""
+
+    IN_H, IN_W = 384, 640
+
+    def __init__(self, weights, **_ignored):
+        import tensorrt as trt              # lazy: device-only dependency
+        import torch
+        self.torch = torch
+        logger = trt.Logger(trt.Logger.WARNING)
+        with open(weights, "rb") as f:
+            self.engine = trt.Runtime(logger).deserialize_cuda_engine(f.read())
+        self.ctx = self.engine.create_execution_context()
+        names = [self.engine.get_tensor_name(i)
+                 for i in range(self.engine.num_io_tensors)]
+        self.bufs = {}
+        for n in names:
+            shape = tuple(self.engine.get_tensor_shape(n))
+            self.bufs[n] = torch.zeros(shape, dtype=torch.float32,
+                                       device="cuda")
+            self.ctx.set_tensor_address(n, self.bufs[n].data_ptr())
+        self.in_name = names[0]
+        self.da_name = names[1]             # export order: img -> (da, ll)
+
+    def __call__(self, img_bgr):
+        torch = self.torch
+        h, w = img_bgr.shape[:2]
+        ratio = min(self.IN_H / h, self.IN_W / w)
+        nh, nw = int(round(h * ratio)), int(round(w * ratio))
+        top = (self.IN_H - nh) // 2
+        left = (self.IN_W - nw) // 2
+        canvas = np.full((self.IN_H, self.IN_W, 3), 114, np.uint8)
+        canvas[top:top + nh, left:left + nw] = cv2.resize(
+            img_bgr, (nw, nh), interpolation=cv2.INTER_LINEAR)
+        t = torch.from_numpy(canvas[:, :, ::-1].copy()).cuda()
+        t = t.permute(2, 0, 1).unsqueeze(0).float() / 255.0
+        self.bufs[self.in_name].copy_(t)
+        self.ctx.execute_async_v3(torch.cuda.current_stream().cuda_stream)
+        torch.cuda.current_stream().synchronize()
+        da = self.bufs[self.da_name][:, :, top:top + nh, left:left + nw]
+        da = torch.nn.functional.interpolate(da, size=(h, w),
+                                             mode="bilinear")
+        return (torch.argmax(da, dim=1).squeeze(0).cpu().numpy() == 1)
+
+
 def create_segmenter(method="hsv", **kw):
     """Factory: 'hsv' (classical, no deps) or 'twinlitenet' (learned,
     needs torch + cloned repo + weights -- kw: repo_path, weights, config)."""
     if method == "hsv":
         return HsvSegmenter(**kw)
     if method == "twinlitenet":
+        if str(kw.get("weights", "")).endswith(".engine"):
+            return TwinLiteTRTSegmenter(**kw)
         return TwinLiteSegmenter(**kw)
     raise ValueError("unknown segmentation method: %r" % (method,))
 
