@@ -17,6 +17,8 @@
 ### adrian (@Ad-Tap)
 - **Branch**: `feature/ad-tap`
 
+## joshua (@schizomida)
+- **Branch**: `feature/joshualee`
 ---
 
 ## Attribution
